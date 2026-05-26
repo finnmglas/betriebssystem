@@ -17,9 +17,21 @@ require_root "$@"
 RELEASE="${RELEASE:-0}"
 cd "${BS_ROOT}"
 
-# Always re-own the tree on exit, even on failure, so the user isn't left with
-# a root-owned git checkout.
-trap 'restore_ownership' EXIT
+# Persistent pip cache: a host-side wheel cache that gets bind-mounted into the
+# chroot for the chroot stage (where the AI venv / pipx hooks run), so they don't
+# re-download multiple GB on every clean build.
+PIP_CACHE="${BS_ROOT}/cache/pip"
+CHROOT_PIP="${BS_ROOT}/chroot/root/.cache/pip"
+cleanup_mounts() {
+    if mountpoint -q "${CHROOT_PIP}" 2>/dev/null; then
+        umount "${CHROOT_PIP}" 2>/dev/null || umount -l "${CHROOT_PIP}" 2>/dev/null || true
+    fi
+}
+
+# Always unmount the pip cache and re-own the tree on exit. The unmount is
+# safety-critical: a leftover bind mount would let a later `rm -rf chroot/`
+# (lb clean) recurse THROUGH it and delete the host cache.
+trap 'cleanup_mounts; restore_ownership' EXIT
 
 MODE_LABEL="dev"; [ "${RELEASE}" = "1" ] && MODE_LABEL="release"
 log "BETRIEBSSYSTEM ${BS_VERSION} -- ${MODE_LABEL} build"
@@ -45,6 +57,8 @@ fi
 
 # 4. clean previous build artifacts (keeps the package cache)
 log "lb clean"
+cleanup_mounts  # never let lb clean's rm -rf recurse through a stale bind mount
+mountpoint -q "${CHROOT_PIP}" 2>/dev/null && die "stale pip-cache mount at ${CHROOT_PIP}; unmount it first"
 lb clean noauto >/dev/null 2>&1 || true
 
 # 5. configure (runs auto/config) then build
@@ -60,10 +74,23 @@ lb config
 export SOURCE_DATE_EPOCH=1022889600
 log "filesystem timestamps pinned to 2002-06-01 (SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH})"
 
-log "lb build  (this downloads packages and can take 20-60+ minutes)"
+# Staged build (= lb build) so we can bind the persistent pip cache into the
+# chroot for the chroot stage only, and unmount it BEFORE lb binary copies the
+# chroot into the image.
+log "lb build  (staged: bootstrap -> chroot[+pip cache] -> binary)"
+mkdir -p "${PIP_CACHE}"
 set +e
-lb build 2>&1 | tee build.log
+{
+    lb bootstrap &&
+    { mkdir -p "${CHROOT_PIP}" && mount --bind "${PIP_CACHE}" "${CHROOT_PIP}"; } &&
+    lb chroot
+} 2>&1 | tee build.log
 RC="${PIPESTATUS[0]}"
+cleanup_mounts  # MUST happen before lb binary copies the chroot
+if [ "${RC}" -eq 0 ]; then
+    lb binary 2>&1 | tee -a build.log
+    RC="${PIPESTATUS[0]}"
+fi
 set -e
 [ "${RC}" -eq 0 ] || die "lb build failed (rc=${RC}); see build.log"
 

@@ -7,6 +7,8 @@ set -e
 export PIPX_HOME=/opt/pipx
 export PIPX_BIN_DIR=/usr/local/bin
 export HOME=/root
+# Reuse the bind-mounted persistent pip cache (build.sh) across builds.
+export PIP_CACHE_DIR=/root/.cache/pip
 
 echo "I: pipx install jupyterlab"
 pipx install jupyterlab || echo "W: jupyterlab install failed (non-fatal)" >&2

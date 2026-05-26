@@ -6,17 +6,22 @@ set -e
 REQ=/opt/betriebssystem/ai-requirements.txt
 [ -f "${REQ}" ] || { echo "I: no ai-requirements.txt, skipping AI venv"; exit 0; }
 
-echo "I: creating /opt/ai-venv (this downloads several GB)"
+# Use the bind-mounted persistent pip cache (build.sh mounts host cache/pip here)
+# so rebuilds reuse downloaded wheels instead of re-fetching multiple GB.
+export HOME=/root
+export PIP_CACHE_DIR=/root/.cache/pip
+
+echo "I: creating /opt/ai-venv (first build downloads several GB; later builds use the pip cache)"
 python3 -m venv /opt/ai-venv
-/opt/ai-venv/bin/pip install --no-cache-dir --upgrade pip wheel setuptools || true
+/opt/ai-venv/bin/pip install --upgrade pip wheel setuptools || true
 
 # CPU PyTorch from the dedicated index (avoids the multi-GB CUDA build).
-/opt/ai-venv/bin/pip install --no-cache-dir \
+/opt/ai-venv/bin/pip install \
     --index-url https://download.pytorch.org/whl/cpu torch torchvision \
     || echo "W: torch (CPU) install failed (non-fatal)" >&2
 
 # Everything else from PyPI.
-/opt/ai-venv/bin/pip install --no-cache-dir -r "${REQ}" \
+/opt/ai-venv/bin/pip install -r "${REQ}" \
     || echo "W: AI requirements install had failures (non-fatal)" >&2
 
 # Convenience launchers + JupyterLab kernel.
