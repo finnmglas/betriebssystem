@@ -52,13 +52,13 @@ log "lb config"
 lb config
 
 # Stamp all filesystem timestamps to 2002-06-01 00:00 UTC (a fixed, "polished"
-# date) instead of random build times. SOURCE_DATE_EPOCH covers reproducible
-# build outputs; MKSQUASHFS_OPTIONS -all-time/-mkfs-time sets EVERY file time in
-# the live squashfs (live-build only appends to MKSQUASHFS_OPTIONS, so this
-# flows through). Calamares preserves these on install.
+# date) instead of random build times. SOURCE_DATE_EPOCH alone does it:
+# mksquashfs CLAMPS every file time to be no later than this epoch, and since all
+# chroot files are dated "now" (newer), they all collapse to 2002-06-01. It also
+# stamps the ISO9660 metadata. (Do NOT also pass mksquashfs -all-time/-mkfs-time:
+# mksquashfs refuses both at once.) Calamares preserves these on install.
 export SOURCE_DATE_EPOCH=1022889600
-export MKSQUASHFS_OPTIONS="-all-time 1022889600 -mkfs-time 1022889600"
-log "filesystem timestamps pinned to 2002-06-01 (epoch ${SOURCE_DATE_EPOCH})"
+log "filesystem timestamps pinned to 2002-06-01 (SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH})"
 
 log "lb build  (this downloads packages and can take 20-60+ minutes)"
 set +e
