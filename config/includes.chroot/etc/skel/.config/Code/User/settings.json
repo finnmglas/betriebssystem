@@ -1,0 +1,32 @@
+{
+	"//": "BETRIEBSSYSTEM default VS Code settings -- quiet, blank, no nags.",
+
+	"telemetry.telemetryLevel": "off",
+	"redhat.telemetry.enabled": false,
+	"workbench.startupEditor": "none",
+	"workbench.enableExperiments": false,
+	"workbench.tips.enabled": false,
+	"workbench.welcomePage.walkthroughs.openOnInstall": false,
+	"update.mode": "none",
+	"update.showReleaseNotes": false,
+	"extensions.ignoreRecommendations": true,
+	"extensions.autoCheckUpdates": false,
+	"git.openRepositoryInParentFolders": "never",
+	"security.workspace.trust.enabled": false,
+
+	"//chat": "Agent / Copilot chat off by default.",
+	"chat.commandCenter.enabled": false,
+	"chat.agent.enabled": false,
+	"github.copilot.enable": { "*": false },
+
+	"//editor": "Fira Code with ligatures (font is preinstalled).",
+	"editor.fontFamily": "'Fira Code', 'Noto Color Emoji', monospace",
+	"editor.fontLigatures": true,
+	"editor.fontSize": 14,
+	"editor.renderWhitespace": "boundary",
+	"editor.bracketPairColorization.enabled": true,
+	"files.autoSave": "afterDelay",
+	"files.trimTrailingWhitespace": true,
+	"terminal.integrated.defaultProfile.linux": "bash",
+	"workbench.colorTheme": "Default Dark Modern"
+}

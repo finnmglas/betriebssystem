@@ -1,0 +1,26 @@
+#!/bin/sh
+# Preinstall a small VS Code extension set into the skeleton so every new user
+# gets them. Guarded (network + running `code` headless as root is finicky); a
+# failure just means no preinstalled extensions, not a failed build.
+set -e
+command -v code >/dev/null 2>&1 || { echo "I: code not present, skipping extensions"; exit 0; }
+
+EXTDIR=/etc/skel/.vscode/extensions
+mkdir -p "${EXTDIR}"
+export HOME=/root
+
+for ext in \
+    ms-python.python \
+    golang.go \
+    rust-lang.rust-analyzer \
+    ms-vscode.cpptools \
+    redhat.vscode-yaml \
+    esbenp.prettier-vscode \
+    ms-azuretools.vscode-docker ; do
+    echo "I: vscode ext ${ext}"
+    code --no-sandbox --user-data-dir /tmp/code-build --extensions-dir "${EXTDIR}" \
+        --install-extension "${ext}" >/dev/null 2>&1 \
+        || echo "W: vscode extension ${ext} failed (non-fatal)" >&2
+done
+chmod -R a+rX "${EXTDIR}" 2>/dev/null || true
+rm -rf /tmp/code-build 2>/dev/null || true

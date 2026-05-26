@@ -1,0 +1,6 @@
+// BETRIEBSSYSTEM VS Code runtime args.
+// password-store=basic avoids the gnome-keyring unlock prompt on first run.
+{
+	"password-store": "basic",
+	"enable-crash-reporter": false
+}
