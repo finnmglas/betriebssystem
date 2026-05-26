@@ -111,9 +111,9 @@ installer config on top.
       verify on first boot).
 - [x] First successful build: `BETRIEBSSYSTEM-0.1.0-amd64.iso`, 1.9 GB, ZFS
       module built against 6.12.90, boots in QEMU (2026-05-26, commit 5a806a9).
-- [x] Fixed the GRUB theme hook (wrong CWD assumption — see Gotchas). Applies on
-      the next build; visually verify the themed background + renamed menu in
-      QEMU once rebuilt.
+- [x] Fixed + verified the GRUB theme hook (wrong CWD assumption — see Gotchas):
+      themed background and renamed "BETRIEBSSYSTEM" menu confirmed in QEMU on
+      build g34310ef (2026-05-26).
 - [ ] Optional: native ZFS encryption flow (toggle in `etc/calamares/modules/zfs.conf`).
 
 ## Self-update protocol
