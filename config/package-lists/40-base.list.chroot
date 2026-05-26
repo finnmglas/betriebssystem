@@ -1,0 +1,14 @@
+# Baseline utilities for a usable, debuggable system.
+sudo
+curl
+wget
+ca-certificates
+nano
+vim
+git
+htop
+pciutils
+usbutils
+bash-completion
+network-manager
+firmware-linux-free

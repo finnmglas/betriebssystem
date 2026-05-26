@@ -1,0 +1,21 @@
+# BETRIEBSSYSTEM desktop -- minimal modern GNOME (Wayland / Mutter).
+#
+# gnome-core is the slim GNOME metapackage (Shell, GDM, Settings, a small set
+# of core apps) rather than the full `gnome` task, keeping the image lean.
+# GDM runs a Wayland session backed by Mutter, the modern compositor.
+gnome-core
+gdm3
+gnome-shell
+mutter
+gnome-control-center
+gnome-terminal
+gnome-tweaks
+nautilus
+network-manager-gnome
+xdg-desktop-portal-gnome
+fonts-cantarell
+
+# Boot splash (white circle on black).
+plymouth
+plymouth-themes
+plymouth-label

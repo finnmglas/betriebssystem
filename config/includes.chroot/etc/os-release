@@ -1,0 +1,12 @@
+NAME="BETRIEBSSYSTEM"
+PRETTY_NAME="BETRIEBSSYSTEM"
+ID=betriebssystem
+ID_LIKE=debian
+VERSION="0.1.0"
+VERSION_ID="0.1.0"
+VERSION_CODENAME=kreis
+HOME_URL="https://github.com/finnglas/betriebssystem"
+SUPPORT_URL="https://github.com/finnglas/betriebssystem"
+BUG_REPORT_URL="https://github.com/finnglas/betriebssystem/issues"
+LOGO=betriebssystem-logo
+ANSI_COLOR="1;37"

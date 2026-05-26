@@ -1,0 +1,5 @@
+# Live-system runtime. Required for the ISO to boot as live media and to
+# autoconfigure the live session (autologin user, locale, etc.).
+live-boot
+live-config
+live-config-systemd

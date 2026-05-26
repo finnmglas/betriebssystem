@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# auto/config -- reproducible `lb config` for BETRIEBSSYSTEM.
+#
+# live-build reads this every time `lb config` runs, so the whole ISO
+# definition lives here in version control. Edit this file to change the
+# distribution, package areas, bootloaders, ISO metadata, etc.
+#
+# Env knobs (exported by scripts/build.sh):
+#   BS_DISTRIBUTION  Debian suite to build      (default: trixie)
+#   BS_ARCH          target architecture        (default: amd64)
+#   BS_MIRROR        Debian mirror              (default: https://deb.debian.org/debian/)
+#
+set -e
+
+DISTRIBUTION="${BS_DISTRIBUTION:-trixie}"
+ARCH="${BS_ARCH:-amd64}"
+MIRROR="${BS_MIRROR:-https://deb.debian.org/debian/}"
+SECURITY_MIRROR="${BS_SECURITY_MIRROR:-https://deb.debian.org/debian-security/}"
+
+lb config noauto \
+	--mode debian \
+	--system live \
+	--distribution "${DISTRIBUTION}" \
+	--architecture "${ARCH}" \
+	--archive-areas "main contrib non-free-firmware" \
+	--apt-indices false \
+	--apt-recommends true \
+	--cache-packages true \
+	--binary-images iso-hybrid \
+	--bootloaders "grub-pc grub-efi" \
+	--bootappend-live "boot=live components quiet splash username=user hostname=betriebssystem" \
+	--debian-installer none \
+	--firmware-binary true \
+	--firmware-chroot true \
+	--memtest none \
+	--linux-packages linux-image \
+	--updates true \
+	--security true \
+	--mirror-bootstrap "${MIRROR}" \
+	--mirror-chroot "${MIRROR}" \
+	--mirror-binary "${MIRROR}" \
+	--mirror-chroot-security "${SECURITY_MIRROR}" \
+	--mirror-binary-security "${SECURITY_MIRROR}" \
+	--iso-application "BETRIEBSSYSTEM" \
+	--iso-volume "BETRIEBSSYSTEM" \
+	--iso-publisher "BETRIEBSSYSTEM" \
+	--iso-preparer "BETRIEBSSYSTEM build system; https://deb.debian.org/" \
+	--win32-loader false \
+	"${@}"

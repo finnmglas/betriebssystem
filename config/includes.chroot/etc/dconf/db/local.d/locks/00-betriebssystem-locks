@@ -1,0 +1,4 @@
+# Lock the wallpaper/branding so the live session always presents the
+# BETRIEBSSYSTEM identity. Users of an *installed* system can still change
+# these via their own user-db layer if a hook removes the lock; kept minimal.
+/org/gnome/login-screen/logo

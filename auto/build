@@ -1,0 +1,4 @@
+#!/bin/sh
+# auto/build -- thin wrapper so `lb build` is logged reproducibly.
+set -e
+lb build noauto "${@}" 2>&1 | tee build.log

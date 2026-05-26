@@ -1,0 +1,23 @@
+# System-wide GNOME defaults for BETRIEBSSYSTEM.
+# Applied by the 0300-dconf-update chroot hook (`dconf update`).
+
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/backgrounds/betriebssystem/wallpaper.png'
+picture-uri-dark='file:///usr/share/backgrounds/betriebssystem/wallpaper.png'
+picture-options='zoom'
+primary-color='#000000'
+secondary-color='#000000'
+
+[org/gnome/desktop/screensaver]
+picture-uri='file:///usr/share/backgrounds/betriebssystem/wallpaper.png'
+picture-options='zoom'
+primary-color='#000000'
+
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+gtk-theme='Adwaita-dark'
+enable-animations=true
+
+[org/gnome/login-screen]
+logo='/usr/share/pixmaps/betriebssystem-logo.png'
+disable-user-list=false

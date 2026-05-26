@@ -1,0 +1,8 @@
+# Graphical installer. Calamares installs the live system onto a target disk;
+# our config (etc/calamares) drives a root-on-ZFS layout.
+calamares
+calamares-settings-debian
+# Partitioning / filesystem helpers Calamares shells out to.
+gparted
+dosfstools
+e2fsprogs

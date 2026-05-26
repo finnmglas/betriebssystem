@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=BETRIEBSSYSTEM
+Description=A single white circle on a black field.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/betriebssystem
+ScriptFile=/usr/share/plymouth/themes/betriebssystem/betriebssystem.script

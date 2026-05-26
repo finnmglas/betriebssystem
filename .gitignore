@@ -1,0 +1,40 @@
+# ---- live-build working & output artifacts (never commit) ----
+/.build/
+/cache/
+/chroot/
+/chroot.packages.*
+/binary/
+/binary.*
+/local/
+/.stage/
+# Note: auto/ holds only our authored config/build/clean scripts -- tracked.
+
+# live-build regenerates everything under config/ that is not part of our
+# source-of-truth. Track only the directories we author (see .gitignore rules
+# below); ignore the machine-generated control files lb writes there.
+/config/binary
+/config/bootstrap
+/config/chroot
+/config/common
+/config/source
+/config/build
+/config/*.hook.*
+
+# Generated installer/runtime caches
+*.log
+*.iso
+*.img
+*.qcow2
+*.contents
+*.packages
+*.files
+chroot.files
+
+# QEMU runtime state
+/run/
+/dist/
+
+# Editor / OS noise
+.DS_Store
+*.swp
+*~

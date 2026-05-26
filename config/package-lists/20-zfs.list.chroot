@@ -1,0 +1,11 @@
+# ZFS support. zfs-dkms builds the kernel module against the installed kernel
+# during the chroot stage (linux-headers must match the live kernel), so the
+# live environment can import/create pools and the installer can target
+# root-on-ZFS. zfs-initramfs lets an installed system boot from a ZFS root.
+linux-headers-amd64
+zfs-dkms
+zfsutils-linux
+zfs-initramfs
+# Build prerequisites for the DKMS module build.
+build-essential
+dkms

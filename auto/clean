@@ -1,0 +1,6 @@
+#!/bin/sh
+# auto/clean -- remove build artifacts but keep the downloaded package cache.
+set -e
+lb clean noauto "${@}"
+rm -f build.log chroot.packages.live chroot.packages.install
+rm -f config/binary config/bootstrap config/chroot config/common config/source
