@@ -7,6 +7,8 @@ nano
 vim
 git
 htop
+unzip
+zip
 pciutils
 usbutils
 bash-completion

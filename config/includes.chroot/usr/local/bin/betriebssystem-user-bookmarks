@@ -1,0 +1,21 @@
+#!/bin/sh
+# Seed the per-user Nautilus sidebar bookmarks (Projects, Notes, Services, Games)
+# on first login. Done per-user because the GTK bookmarks file needs the real
+# $HOME, which isn't known at image-build time. Idempotent.
+set -e
+BM="${HOME}/.config/gtk-3.0/bookmarks"
+
+# Already seeded? bail.
+[ -f "${BM}" ] && grep -q "Documents/Projects" "${BM}" 2>/dev/null && exit 0
+
+mkdir -p "${HOME}/.config/gtk-3.0"
+for d in Projects Notes Services Games; do
+    mkdir -p "${HOME}/Documents/${d}"
+done
+
+{
+    echo "file://${HOME}/Documents/Projects Projects"
+    echo "file://${HOME}/Documents/Notes Notes"
+    echo "file://${HOME}/Documents/Services Services"
+    echo "file://${HOME}/Documents/Games Games"
+} >> "${BM}"

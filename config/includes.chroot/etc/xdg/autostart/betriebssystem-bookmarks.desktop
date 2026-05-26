@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=BETRIEBSSYSTEM bookmarks
+Comment=Seed Nautilus sidebar bookmarks on first login
+Exec=/usr/local/bin/betriebssystem-user-bookmarks
+NoDisplay=true
+Terminal=false
+X-GNOME-Autostart-enabled=true

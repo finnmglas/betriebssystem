@@ -1,0 +1,33 @@
+#!/bin/sh
+# Download the QoL GNOME extensions that aren't in Debian, for shell 48.
+# FULLY guarded: a 404 / incompatible build / network error is skipped silently.
+# A missing extension never breaks the build, and GNOME ignores any
+# enabled-extensions entry that isn't installed -- so nothing is ever user-visible
+# if one is absent. (Blur my Shell, Dash to Dock, Tiling Assistant come from
+# Debian packages instead, so those always work.)
+set -e
+DEST=/usr/share/gnome-shell/extensions
+SHELL_VER=48
+mkdir -p "${DEST}"
+command -v curl >/dev/null 2>&1 || { echo "I: no curl; skipping gnome extension downloads"; exit 0; }
+
+for uuid in \
+    windowIsReady_Remover@nunofarruca@gmail.com \
+    folder-search-provider@sitnik.ru \
+    BrowserSearchProvider@mepowerleo10.github.io ; do
+    url="https://extensions.gnome.org/download-extension/${uuid}.shell-extension.zip?shell_version=${SHELL_VER}"
+    tmp="$(mktemp /tmp/bsext-XXXXXX.zip)"
+    if curl -fsSL "${url}" -o "${tmp}" 2>/dev/null && [ -s "${tmp}" ]; then
+        mkdir -p "${DEST}/${uuid}"
+        if command -v unzip >/dev/null 2>&1 && unzip -oq "${tmp}" -d "${DEST}/${uuid}" 2>/dev/null; then
+            [ -d "${DEST}/${uuid}/schemas" ] && glib-compile-schemas "${DEST}/${uuid}/schemas" 2>/dev/null || true
+            echo "I: installed gnome extension ${uuid}"
+        else
+            echo "W: could not unpack ${uuid} (skipped)" >&2
+            rm -rf "${DEST}/${uuid}"
+        fi
+    else
+        echo "W: no shell-${SHELL_VER} build for ${uuid} (skipped)" >&2
+    fi
+    rm -f "${tmp}"
+done
