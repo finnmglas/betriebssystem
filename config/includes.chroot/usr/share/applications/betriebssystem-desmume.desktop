@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=DeSmuME (Nintendo DS)
+Exec=desmume %f
+TryExec=desmume
+NoDisplay=true
+Terminal=false
+MimeType=application/x-nds-rom;
+Categories=Game;Emulator;

@@ -1,0 +1,30 @@
+#!/bin/sh
+# Make xonsh the interactive shell for every user, without making it the POSIX
+# login shell (a non-POSIX login shell breaks display managers and scripts that
+# source sh-style profiles). We keep bash as the login shell and exec into xonsh
+# only for interactive terminals -- the standard "use a fancy shell safely" trick.
+set -e
+
+# Register xonsh as a valid shell.
+if [ -x /usr/bin/xonsh ]; then
+    grep -qxF /usr/bin/xonsh /etc/shells 2>/dev/null || echo /usr/bin/xonsh >> /etc/shells
+fi
+
+# Append the exec-into-xonsh snippet to the skeleton .bashrc so all new users
+# (the live user and any Calamares-created user) inherit it.
+SKEL_BASHRC=/etc/skel/.bashrc
+[ -f "${SKEL_BASHRC}" ] || touch "${SKEL_BASHRC}"
+if ! grep -q "BETRIEBSSYSTEM: drop into xonsh" "${SKEL_BASHRC}"; then
+    cat >> "${SKEL_BASHRC}" <<'EOF'
+
+# BETRIEBSSYSTEM: drop into xonsh for interactive terminals (bash stays the
+# login shell). Guarded so non-interactive/ssh/scp sessions are unaffected.
+if [ -n "$PS1" ] && [ -z "$XONSH_VERSION" ] && command -v xonsh >/dev/null 2>&1; then
+    case "$-" in
+        *i*) exec xonsh ;;
+    esac
+fi
+EOF
+fi
+
+echo "I: xonsh configured as interactive shell (bash remains login shell)"

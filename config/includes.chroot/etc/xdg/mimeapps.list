@@ -1,0 +1,9 @@
+[Default Applications]
+application/x-gba-rom=betriebssystem-mgba.desktop
+application/x-gameboy-rom=betriebssystem-mgba.desktop
+application/x-nes-rom=betriebssystem-nestopia.desktop
+application/x-n64-rom=betriebssystem-mupen64.desktop
+application/x-nds-rom=betriebssystem-desmume.desktop
+application/x-ms-dos-executable=wine-exe.desktop
+application/x-msi=wine-exe.desktop
+application/vnd.android.package-archive=betriebssystem-apk.desktop

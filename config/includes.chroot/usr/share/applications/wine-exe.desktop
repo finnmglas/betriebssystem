@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Run with Wine
+Comment=Run a Windows program
+Exec=wine %f
+NoDisplay=true
+Terminal=false
+MimeType=application/x-ms-dos-executable;application/x-msi;
+Categories=System;Emulator;

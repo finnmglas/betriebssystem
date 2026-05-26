@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-gba-rom">
+    <comment>Game Boy Advance ROM</comment>
+    <glob pattern="*.gba"/>
+  </mime-type>
+  <mime-type type="application/x-gameboy-rom">
+    <comment>Game Boy ROM</comment>
+    <glob pattern="*.gb"/>
+    <glob pattern="*.gbc"/>
+    <glob pattern="*.sgb"/>
+  </mime-type>
+  <mime-type type="application/x-nes-rom">
+    <comment>NES ROM</comment>
+    <glob pattern="*.nes"/>
+  </mime-type>
+  <mime-type type="application/x-n64-rom">
+    <comment>Nintendo 64 ROM</comment>
+    <glob pattern="*.n64"/>
+    <glob pattern="*.z64"/>
+    <glob pattern="*.v64"/>
+  </mime-type>
+  <mime-type type="application/x-nds-rom">
+    <comment>Nintendo DS ROM</comment>
+    <glob pattern="*.nds"/>
+  </mime-type>
+  <mime-type type="application/vnd.android.package-archive">
+    <comment>Android package</comment>
+    <glob pattern="*.apk"/>
+  </mime-type>
+  <!-- .exe/.msi (application/x-ms-dos-executable, application/x-msi) and .iso
+       already exist in shared-mime-info. We intentionally do NOT remap .iso. -->
+</mime-info>

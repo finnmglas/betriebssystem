@@ -1,0 +1,20 @@
+#!/bin/sh
+# Wine with 32-bit support, for running Windows .exe across architectures.
+# This is a hook (not a package list) because wine32:i386 needs i386 multiarch
+# enabled first, which must happen after bootstrap but can't be expressed in a
+# package list. Guarded so a network/repo hiccup degrades to 64-bit Wine rather
+# than failing the whole build.
+set -e
+
+echo "I: enabling i386 multiarch for Wine"
+dpkg --add-architecture i386
+apt-get update
+
+export DEBIAN_FRONTEND=noninteractive
+if apt-get install -y --no-install-recommends wine wine64 wine32:i386 winetricks mono-complete; then
+    echo "I: Wine (32+64-bit) installed"
+elif apt-get install -y --no-install-recommends wine wine64 winetricks; then
+    echo "W: 32-bit Wine unavailable; installed 64-bit Wine only" >&2
+else
+    echo "W: Wine install failed (non-fatal); .exe association will not work" >&2
+fi

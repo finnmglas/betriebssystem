@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Mupen64Plus (N64)
+Exec=mupen64plus-qt %f
+TryExec=mupen64plus-qt
+NoDisplay=true
+Terminal=false
+MimeType=application/x-n64-rom;
+Categories=Game;Emulator;

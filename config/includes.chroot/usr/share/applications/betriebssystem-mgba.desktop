@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=mGBA (Game Boy / GBA)
+Exec=mgba-qt %f
+TryExec=mgba-qt
+NoDisplay=true
+Terminal=false
+MimeType=application/x-gba-rom;application/x-gameboy-rom;
+Categories=Game;Emulator;

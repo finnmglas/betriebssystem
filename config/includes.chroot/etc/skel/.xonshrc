@@ -1,0 +1,39 @@
+# BETRIEBSSYSTEM default xonsh config.
+# xonsh is a Python-powered shell; this is a sane, fast starter.
+
+# --- behaviour ---
+$XONSH_SHOW_TRACEBACK = False
+$XONSH_HISTORY_BACKEND = 'sqlite'
+$HISTCONTROL = {'ignoredups', 'ignoreerr', 'erasedups'}
+$XONSH_HISTORY_SIZE = (20000, 'commands')
+$COMPLETIONS_CONFIRM = True
+$AUTO_CD = True
+$DOTGLOB = True
+$XONSH_AUTOPAIR = True
+
+# --- prompt: user@host:cwd (git branch) [exit-code] ---
+$PROMPT = ('{env_name}{BOLD_WHITE}{user}@{hostname}{RESET}:'
+           '{BOLD_BLUE}{cwd}{RESET}'
+           '{branch_color}{curr_branch: ({})}{RESET}'
+           '{RED}{last_return_code_if_nonzero:[{}]}{RESET}'
+           '{BOLD_WHITE}${RESET} ')
+
+# --- aliases ---
+aliases['ll'] = 'ls -lah --color=auto'
+aliases['la'] = 'ls -A --color=auto'
+aliases['l']  = 'ls -CF --color=auto'
+aliases['grep'] = 'grep --color=auto'
+aliases['gs'] = 'git status'
+aliases['gd'] = 'git diff'
+aliases['gl'] = 'git log --oneline --graph --decorate'
+aliases['..'] = 'cd ..'
+aliases['...'] = 'cd ../..'
+
+# --- optional tool integrations (guarded; both shipped in BETRIEBSSYSTEM) ---
+import shutil
+if shutil.which('zoxide'):
+    execx($(zoxide init xonsh), 'exec', __xonsh__.ctx, filename='zoxide')
+if shutil.which('fzf'):
+    $fzf_history_binding = "c-r"   # Ctrl-R fuzzy history (if xontrib-fzf present)
+
+# Drop a per-machine override file in ~/.config/xonsh/rc.d/ to extend this.

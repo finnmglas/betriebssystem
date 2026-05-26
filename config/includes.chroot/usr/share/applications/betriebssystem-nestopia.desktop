@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Nestopia (NES)
+Exec=nestopia %f
+TryExec=nestopia
+NoDisplay=true
+Terminal=false
+MimeType=application/x-nes-rom;
+Categories=Game;Emulator;

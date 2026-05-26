@@ -1,0 +1,13 @@
+#!/bin/sh
+# Rebuild MIME + desktop databases so our custom ROM/EXE/APK file associations
+# (usr/share/mime/packages/betriebssystem-roms.xml + the launcher .desktop files
+# + /etc/xdg/mimeapps.list) take effect.
+set -e
+if command -v update-mime-database >/dev/null 2>&1; then
+    echo "I: updating MIME database"
+    update-mime-database /usr/share/mime || true
+fi
+if command -v update-desktop-database >/dev/null 2>&1; then
+    echo "I: updating desktop database"
+    update-desktop-database /usr/share/applications || true
+fi

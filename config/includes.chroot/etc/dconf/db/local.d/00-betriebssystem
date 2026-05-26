@@ -21,3 +21,10 @@ enable-animations=true
 [org/gnome/login-screen]
 logo='/usr/share/pixmaps/betriebssystem-logo.png'
 disable-user-list=false
+
+[org/gnome/shell]
+# Dash favorites, in order: Firefox, Files, Logseq, VS Code, Android Studio,
+# Disks, Task Manager (System Monitor), Terminal. Logseq/Android Studio arrive
+# via the first-boot Flatpak/tarball install; GNOME silently ignores a favorite
+# whose .desktop is not (yet) present.
+favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'com.logseq.Logseq.desktop', 'code.desktop', 'android-studio.desktop', 'org.gnome.DiskUtility.desktop', 'org.gnome.SystemMonitor.desktop', 'org.gnome.Terminal.desktop']
