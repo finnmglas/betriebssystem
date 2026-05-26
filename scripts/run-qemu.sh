@@ -12,6 +12,7 @@
 #   --ram=MB         guest RAM in MB                         (default 16384)
 #   --cpus=N         vCPUs                                   (default 8)
 #   --no-gl          disable host GL accel (if no virglrenderer on the host)
+#   --no-shared      don't share ./shared into the guest at /mnt/shared
 #   --no-kvm         force software emulation (TCG) even if KVM is available
 #
 # If no ISO is given, the newest dist/*.iso is used.
@@ -28,6 +29,8 @@ RAM=16384
 CPUS=8
 NOKVM=0
 GL=1
+SHARE=1
+SHARED_DIR="${BS_ROOT}/shared"
 
 for arg in "$@"; do
     case "$arg" in
@@ -39,7 +42,8 @@ for arg in "$@"; do
         --cpus=*)      CPUS="${arg#*=}" ;;
         --no-kvm)      NOKVM=1 ;;
         --no-gl)       GL=0 ;;
-        -h|--help)     sed -n '3,22p' "$0"; exit 0 ;;
+        --no-shared)   SHARE=0 ;;
+        -h|--help)     sed -n '3,18p' "$0"; exit 0 ;;
         -*)            die "unknown option: $arg" ;;
         *)             ISO="$arg" ;;
     esac
@@ -77,6 +81,14 @@ else
     QEMU+=(-vga virtio -display gtk)
 fi
 QEMU+=(-device qemu-xhci -device usb-tablet)
+
+# Host<->guest shared folder over 9p virtfs (./shared -> /mnt/shared in the VM).
+# security_model=mapped-xattr works without running QEMU as root.
+if [ "${SHARE}" -eq 1 ]; then
+    mkdir -p "${SHARED_DIR}"
+    log "shared folder: ${SHARED_DIR} -> /mnt/shared in the guest (--no-shared to disable)"
+    QEMU+=(-virtfs "local,path=${SHARED_DIR},mount_tag=bsshared,security_model=mapped-xattr,id=bsshared")
+fi
 
 # UEFI firmware (OVMF) if requested.
 if [ "${UEFI}" -eq 1 ]; then

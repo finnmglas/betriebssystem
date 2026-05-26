@@ -54,6 +54,11 @@ chroot.files
 /archive/*.iso
 /archive/*.sha256
 
+# /shared/ is the host<->QEMU 9p drop folder; track the dir + docs, ignore contents.
+/shared/*
+!/shared/README.md
+!/shared/.gitkeep
+
 # Editor / OS noise
 .DS_Store
 *.swp

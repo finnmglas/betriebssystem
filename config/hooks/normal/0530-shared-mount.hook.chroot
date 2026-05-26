@@ -1,0 +1,7 @@
+#!/bin/sh
+# Enable the QEMU 9p shared-folder mount (/mnt/shared). Gated to VMs by the unit
+# itself, so it's a no-op on bare metal.
+set -e
+mkdir -p /mnt/shared
+systemctl enable mnt-shared.mount 2>/dev/null || true
+echo "I: enabled mnt-shared.mount (QEMU 9p share -> /mnt/shared, VMs only)"
