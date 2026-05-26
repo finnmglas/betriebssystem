@@ -2,11 +2,14 @@
 	"//": "BETRIEBSSYSTEM default VS Code settings -- quiet, blank, no nags.",
 
 	"telemetry.telemetryLevel": "off",
+	"telemetry.feedback.enabled": false,
 	"redhat.telemetry.enabled": false,
+
+	"//welcome": "No welcome tab, walkthroughs, tips, release notes or onboarding.",
 	"workbench.startupEditor": "none",
-	"workbench.enableExperiments": false,
-	"workbench.tips.enabled": false,
 	"workbench.welcomePage.walkthroughs.openOnInstall": false,
+	"workbench.tips.enabled": false,
+	"workbench.enableExperiments": false,
 	"update.mode": "none",
 	"update.showReleaseNotes": false,
 	"extensions.ignoreRecommendations": true,
@@ -14,7 +17,8 @@
 	"git.openRepositoryInParentFolders": "never",
 	"security.workspace.trust.enabled": false,
 
-	"//chat": "Agent / Copilot chat off by default.",
+	"//chat": "Hide the command center + Copilot/agent chat entirely (the 'sign in / welcome to chat' nag).",
+	"window.commandCenter": false,
 	"chat.commandCenter.enabled": false,
 	"chat.agent.enabled": false,
 	"github.copilot.enable": { "*": false },

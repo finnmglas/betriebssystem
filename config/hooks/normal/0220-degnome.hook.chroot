@@ -1,0 +1,13 @@
+#!/bin/sh
+# Kill GNOME's first-run nags: the "Take a Tour" welcome (gnome-tour) and the
+# initial-setup wizard. gnome-core only *recommends* these, so purging is safe.
+set -e
+export DEBIAN_FRONTEND=noninteractive
+echo "I: removing gnome-tour + gnome-initial-setup"
+apt-get purge -y gnome-tour gnome-initial-setup 2>/dev/null || true
+apt-get autoremove -y 2>/dev/null || true
+
+# Belt-and-suspenders: mark initial-setup done in skel so it never runs even if
+# something pulls it back in.
+mkdir -p /etc/skel/.config
+echo yes > /etc/skel/.config/gnome-initial-setup-done

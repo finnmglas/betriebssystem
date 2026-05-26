@@ -54,14 +54,14 @@ installer config on top.
 - `0100-grub-theme.hook.binary` — force our GRUB theme, rename menu titles to BETRIEBSSYSTEM, drop the boot beep, inject the "Install BETRIEBSSYSTEM" entry.
 - `0150-wine-multiarch.hook.chroot` — enable i386, install Wine 32/64-bit (guarded).
 - `0200-dconf.hook.chroot` — `dconf update` so GNOME defaults/favorites apply.
+- `0220-degnome.hook.chroot` — purge gnome-tour + gnome-initial-setup (kill first-run nags).
 - `0240-locale-keyboard.hook.chroot` — `locale-gen` en_US.UTF-8 (German keyboard via /etc/default/keyboard).
 - `0250-xonsh.hook.chroot` — register xonsh; make interactive bash `exec xonsh`.
 - `0260-desktop-db.hook.chroot` — rebuild MIME + desktop DBs (file associations).
 - `0300-pipx.hook.chroot` — JupyterLab + PlatformIO system-wide via pipx (guarded, network).
 - `0300-zfs-check.hook.chroot` — **fails the build** if `zfs.ko` didn't build for the live kernel.
 - `0310-embedded.hook.chroot` — arduino-cli + PlatformIO udev rules (guarded, network).
-- `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service`.
-- `0410-flatpak-seed.hook.chroot` — **bake** Logseq/Android Studio/Arduino IDE2 into the image (guarded); first-boot service is the fallback.
+- `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service` (installs Logseq/Android Studio/Arduino IDE2 on first boot of an INSTALLED system).
 - `0420-vscode-ext.hook.chroot` — preinstall VS Code extensions into `/etc/skel` (guarded; `code --install-extension` as root needs `--no-sandbox`).
 - `0900-initramfs.hook.chroot` — rebuild initramfs (embeds Plymouth + ZFS).
 - `9000-release-scrub.hook.chroot` — if `/etc/.bs-buildmode` == `release`, scrub cosmetic tells; always remove the marker.
@@ -132,6 +132,21 @@ installer config on top.
   genuinely-third-party names to its `THIRDPARTY` allowlist.
 - **rustc/cargo vs rustup conflict**: they're mutually exclusive in Debian. We
   ship system `rustc`+`cargo` (works offline); don't re-add `rustup`.
+- **Flatpak apps CANNOT be baked into the chroot.** `flatpak install` runs
+  post-deploy triggers (and extra-data `apply_extra`, e.g. Android Studio) inside
+  `bwrap`, which needs unprivileged user namespaces the build chroot denies
+  (`bwrap: No permissions to create new namespace`). It also drags in ~5 GB of
+  runtimes for zero working apps. So flatpak apps are deferred to the first-boot
+  service (`bwrap` works fine on a booted system). For apps that MUST be in the
+  live image, use a `/opt` tarball/AppImage instead (plain files, no bwrap).
+- **Firefox** is configured via enterprise policy `policies.json` (in both
+  `/usr/lib/firefox-esr/distribution/` and `/etc/firefox/policies/`): no
+  onboarding, Google default, force-installed uBlock/Containers/Cookie-Editor,
+  toolbar bookmarks. Empty-`Title` bookmarks render as favicon-only.
+- **VS Code** is preconfigured in `/etc/skel` (settings.json + argv.json): a
+  blank settings.json alone does NOT stop the MS build's first-run Copilot/chat
+  welcome — also set `window.commandCenter:false` + `chat.commandCenter.enabled:false`
+  and `password-store:basic` (argv.json) to avoid the gnome-keyring prompt.
 - **Flatpak/pipx/arduino-cli run at build (network) or first boot**, not cached
   in-repo (only apt .debs persist in `cache/`). The first-boot Flatpak service is
   gated `!/run/live/medium` so it never runs in a live session.
