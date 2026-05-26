@@ -54,12 +54,15 @@ installer config on top.
 - `0100-grub-theme.hook.binary` — force our GRUB theme, rename menu titles to BETRIEBSSYSTEM, drop the boot beep, inject the "Install BETRIEBSSYSTEM" entry.
 - `0150-wine-multiarch.hook.chroot` — enable i386, install Wine 32/64-bit (guarded).
 - `0200-dconf.hook.chroot` — `dconf update` so GNOME defaults/favorites apply.
+- `0240-locale-keyboard.hook.chroot` — `locale-gen` en_US.UTF-8 (German keyboard via /etc/default/keyboard).
 - `0250-xonsh.hook.chroot` — register xonsh; make interactive bash `exec xonsh`.
 - `0260-desktop-db.hook.chroot` — rebuild MIME + desktop DBs (file associations).
 - `0300-pipx.hook.chroot` — JupyterLab + PlatformIO system-wide via pipx (guarded, network).
 - `0300-zfs-check.hook.chroot` — **fails the build** if `zfs.ko` didn't build for the live kernel.
 - `0310-embedded.hook.chroot` — arduino-cli + PlatformIO udev rules (guarded, network).
 - `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service`.
+- `0410-flatpak-seed.hook.chroot` — **bake** Logseq/Android Studio/Arduino IDE2 into the image (guarded); first-boot service is the fallback.
+- `0420-vscode-ext.hook.chroot` — preinstall VS Code extensions into `/etc/skel` (guarded; `code --install-extension` as root needs `--no-sandbox`).
 - `0900-initramfs.hook.chroot` — rebuild initramfs (embeds Plymouth + ZFS).
 - `9000-release-scrub.hook.chroot` — if `/etc/.bs-buildmode` == `release`, scrub cosmetic tells; always remove the marker.
 
@@ -168,6 +171,12 @@ installer config on top.
       Claude Code repos worked, all 119 pkgs installed, GRUB install entry added.
       Boot-test in QEMU underway — still confirm the guarded network hooks landed
       (VS Code, claude CLI, Wine, JupyterLab, PlatformIO, arduino-cli).
+- [ ] Verify the rebuild (2026-05-26 polish): xonsh highlighting (monokai),
+      `cls`/aliases, fastfetch greeting; German keyboard + English locale;
+      GNOME hot-corner + Nautilus power combo; Templates (incl. ODF); VS Code
+      quiet/no-keyring + extensions; Flatpaks baked in & present in live. ISO ~6.5-7G.
+- [ ] Confirm `flatpak install` actually works in the chroot (0410); if not, it
+      warns and the first-boot service covers installed systems only.
 - [ ] Verify on first boot: dash favorites populate, xonsh is the terminal shell,
       `.gba`/`.exe` double-click associations work, GRUB "Install" entry launches
       Calamares (the `betriebssystem-install` autostart path).
