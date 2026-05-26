@@ -1,0 +1,31 @@
+# Programming languages + core build tooling.
+build-essential
+clang
+clang-format
+gdb
+cmake
+meson
+ninja-build
+git-lfs
+# Python
+python3-pip
+python3-venv
+pipx
+# JS / TS
+nodejs
+npm
+# Systems
+golang-go
+rustc
+cargo
+rustup
+# JVM
+default-jdk
+default-jre
+kotlin
+# Others
+ruby
+lua5.4
+php-cli
+gfortran
+sbcl

@@ -1,0 +1,16 @@
+# Drivers / firmware for maximum hardware cross-compatibility.
+firmware-linux
+firmware-misc-nonfree
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-sof-signed
+mesa-vulkan-drivers
+vulkan-tools
+va-driver-all
+vdpau-driver-all
+intel-microcode
+amd64-microcode
+# Note: proprietary NVIDIA drivers are intentionally NOT baked in (they need a
+# kernel-matched module build and conflict with nouveau in a live image); add
+# post-install if needed.

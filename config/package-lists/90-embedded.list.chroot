@@ -1,0 +1,7 @@
+# Embedded / microcontroller toolchains (Arduino + ESP32).
+# PlatformIO core is installed system-wide via pipx in the 0300-pipx hook.
+arduino
+arduino-mk
+esptool
+picocom
+minicom

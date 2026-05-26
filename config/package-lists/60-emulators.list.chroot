@@ -1,0 +1,27 @@
+# Emulators for broad "click a ROM and it runs" coverage.
+# File associations are wired in config/includes.chroot/usr/share/mime + mimeapps.
+# (One package per line, no inline comments -- live-build passes these to apt.)
+#
+# mgba-qt: Game Boy / GBC / GBA
+mgba-qt
+# dolphin-emu: GameCube / Wii
+dolphin-emu
+# stella: Atari 2600
+stella
+# atari800: Atari 8-bit
+atari800
+# hatari: Atari ST
+hatari
+# mupen64plus-qt: Nintendo 64
+mupen64plus-qt
+# desmume: Nintendo DS
+desmume
+# nestopia: NES
+nestopia
+# mednafen: multi-system CLI
+mednafen
+# RetroArch + libretro cores as the catch-all front-end
+retroarch
+libretro-snes9x
+libretro-mgba
+libretro-nestopia

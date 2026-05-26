@@ -23,7 +23,7 @@ lb config noauto \
 	--system live \
 	--distribution "${DISTRIBUTION}" \
 	--architecture "${ARCH}" \
-	--archive-areas "main contrib non-free-firmware" \
+	--archive-areas "main contrib non-free non-free-firmware" \
 	--apt-indices false \
 	--apt-recommends true \
 	--cache-packages true \

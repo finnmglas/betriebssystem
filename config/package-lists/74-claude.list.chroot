@@ -1,0 +1,3 @@
+# Claude Code CLI from Anthropic's official apt repo (config/archives/claude-code.*).
+# Note: no official Claude *Desktop* GUI exists for Linux; this is the CLI.
+claude-code

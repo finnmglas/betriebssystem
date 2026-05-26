@@ -1,0 +1,13 @@
+# Everyday applications.
+firefox-esr
+libreoffice
+evince
+file-roller
+gnome-system-monitor
+gnome-disk-utility
+
+# Flatpak + Flathub UI (apps from Flathub are installed by the first-boot
+# service in config/includes.chroot/etc/systemd -- see 0400-flatpak hook).
+flatpak
+gnome-software
+gnome-software-plugin-flatpak

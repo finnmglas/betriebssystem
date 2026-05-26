@@ -1,0 +1,10 @@
+# Virtualization + containers, to run "any sort of app".
+docker.io
+docker-compose
+gnome-boxes
+qemu-system-x86
+qemu-utils
+ovmf
+virt-manager
+libvirt-daemon-system
+libvirt-clients

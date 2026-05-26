@@ -25,6 +25,9 @@ MODE_LABEL="dev"; [ "${RELEASE}" = "1" ] && MODE_LABEL="release"
 log "BETRIEBSSYSTEM ${BS_VERSION} -- ${MODE_LABEL} build"
 log "distribution=${BS_DISTRIBUTION:-trixie} arch=${BS_ARCH:-amd64}"
 
+# 0. pre-flight: fail fast on a mistyped/removed package name
+"${BS_ROOT}/scripts/verify-packages.sh"
+
 # 1. host build dependencies
 "${BS_ROOT}/scripts/bootstrap-deps.sh"
 
