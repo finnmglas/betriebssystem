@@ -40,4 +40,23 @@ for cfg in "${GRUB}"/grub.cfg "${GRUB}"/config.cfg "${GRUB}"/*/grub.cfg; do
         "${cfg}"
 done
 
-echo "I: GRUB themed + rebranded to BETRIEBSSYSTEM (cwd=$(pwd))"
+# 3. Add an "Install BETRIEBSSYSTEM" menu entry: boots the live system with a
+#    marker on the kernel cmdline; an autostart then launches Calamares.
+for cfg in "${GRUB}"/grub.cfg "${GRUB}"/*/grub.cfg; do
+    [ -f "${cfg}" ] || continue
+    grep -q 'betriebssystem-install' "${cfg}" && continue
+    grep -q '/live/vmlinuz' "${cfg}" || continue
+    LINUX_LINE=$(grep -m1 -E '^[[:space:]]*linux[[:space:]]+/live/vmlinuz' "${cfg}")
+    INITRD_LINE=$(grep -m1 -E '^[[:space:]]*initrd[[:space:]]+/live/initrd' "${cfg}")
+    [ -n "${LINUX_LINE}" ] && [ -n "${INITRD_LINE}" ] || continue
+    awk -v li="${LINUX_LINE} betriebssystem-install" -v ir="${INITRD_LINE}" '
+      { print }
+      /^}/ && !done {
+          print "";
+          print "menuentry \"Install BETRIEBSSYSTEM\" --hotkey=i {";
+          print li; print ir; print "}";
+          done = 1
+      }' "${cfg}" > "${cfg}.bs" && mv "${cfg}.bs" "${cfg}"
+done
+
+echo "I: GRUB themed + rebranded to BETRIEBSSYSTEM, install entry added (cwd=$(pwd))"

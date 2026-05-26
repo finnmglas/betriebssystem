@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=BETRIEBSSYSTEM Installer (auto-launch)
+Comment=Starts the installer when booted via the GRUB "Install" entry
+Exec=/usr/local/bin/betriebssystem-autoinstall
+NoDisplay=true
+Terminal=false
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=GNOME;

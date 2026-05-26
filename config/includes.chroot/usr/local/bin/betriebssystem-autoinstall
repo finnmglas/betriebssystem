@@ -1,0 +1,10 @@
+#!/bin/sh
+# Launch the installer automatically, but ONLY when the user picked the
+# "Install BETRIEBSSYSTEM" GRUB entry (which adds 'betriebssystem-install' to
+# the kernel cmdline). On a normal live boot this exits immediately.
+grep -qw betriebssystem-install /proc/cmdline 2>/dev/null || exit 0
+
+# Give the GNOME session a moment to settle, then launch Calamares. The live
+# user has passwordless sudo (live-config default), so no auth prompt.
+sleep 4
+exec sudo -E /usr/bin/calamares
