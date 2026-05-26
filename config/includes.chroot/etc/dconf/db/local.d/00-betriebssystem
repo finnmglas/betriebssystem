@@ -66,3 +66,5 @@ disable-user-list=false
 # via the first-boot Flatpak/tarball install; GNOME silently ignores a favorite
 # whose .desktop is not (yet) present.
 favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'com.logseq.Logseq.desktop', 'code.desktop', 'com.google.AndroidStudio.desktop', 'org.gnome.DiskUtility.desktop', 'org.gnome.SystemMonitor.desktop', 'org.gnome.Terminal.desktop']
+# Tiling Assistant: quarter/corner tiling + tiling popup (beyond GNOME's halves).
+enabled-extensions=['tiling-assistant@leleat-on-github']
