@@ -55,6 +55,7 @@ installer config on top.
 - `0150-wine-multiarch.hook.chroot` — enable i386, install Wine 32/64-bit (guarded).
 - `0200-dconf.hook.chroot` — `dconf update` so GNOME defaults/favorites apply.
 - `0220-degnome.hook.chroot` — purge gnome-tour + gnome-initial-setup (kill first-run nags).
+- `0230-gnome-extensions.hook.chroot` — download QoL extensions not in Debian (Window-Is-Ready-Remover, Folder/Browser Search) for shell 48; fully guarded/fail-silent.
 - `0240-locale-keyboard.hook.chroot` — `locale-gen` en_US.UTF-8 (German keyboard via /etc/default/keyboard).
 - `0250-xonsh.hook.chroot` — register xonsh; make interactive bash `exec xonsh`.
 - `0260-desktop-db.hook.chroot` — rebuild MIME + desktop DBs (file associations).
@@ -131,7 +132,21 @@ installer config on top.
   binary keys must still be named `*.key.chroot` (live-build only scans that
   suffix; it picks `.gpg` vs `.asc` by content).
 - **Nautilus `click-policy` is GLOBAL** (single OR double for everything) — there
-  is no "folders single, files double" mode. We use `single`.
+  is no "folders single, files double" mode. We use `double`.
+- **GNOME extensions are fail-silent by design.** Packaged ones (Tiling Assistant,
+  Blur my Shell, Dash to Dock) are GNOME-48-matched and safe; non-packaged ones
+  are fetched for shell 48 by `0230` (skipped silently on 404/incompat).
+  `enabled-extensions` may list uuids that aren't installed — GNOME just ignores
+  them, so nothing is user-visible if one is absent or breaks.
+- **Custom Nautilus extension** (`usr/share/nautilus-python/extensions/betriebssystem.py`,
+  needs `python3-nautilus`) is **menu-only** (Open in VS Code / Compress / Merge
+  PDF) on purpose — a `ColumnProvider`/`InfoProvider` runs per-file and can hang
+  Nautilus; menu providers run on click only. A broken extension is just skipped.
+- **Persistent pip cache**: `build.sh` runs the build in stages
+  (`lb bootstrap`→`lb chroot`→`lb binary`) and bind-mounts host `cache/pip` into
+  `chroot/root/.cache/pip` for the chroot stage, so the AI venv / pipx hooks reuse
+  wheels. The unmount is safety-critical (a stale mount + `lb clean`'s `rm -rf`
+  would delete the host cache) — `cleanup_mounts` runs on EXIT and before clean.
 - **Filesystem timestamps** are pinned to 2002-06-01 (epoch 1022889600) by
   exporting `SOURCE_DATE_EPOCH` + `MKSQUASHFS_OPTIONS="-all-time … -mkfs-time …"`
   in `build.sh` (live-build only *appends* to `MKSQUASHFS_OPTIONS`, so the env
