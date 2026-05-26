@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=3D Viewer (f3d)
+Comment=Quick-view a 3D model
+Exec=f3d %f
+TryExec=f3d
+NoDisplay=true
+Terminal=false
+MimeType=model/stl;model/obj;model/gltf+json;model/gltf-binary;application/x-3d-model;
+Categories=Graphics;Viewer;

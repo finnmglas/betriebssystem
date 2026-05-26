@@ -7,10 +7,11 @@
 # Options:
 #   --uefi           boot via UEFI/OVMF instead of legacy BIOS
 #   --disk[=PATH]    attach a writable virtio disk (default run/test-disk.qcow2,
-#                    created at 32G if absent) -- use this to test installing
-#                    BETRIEBSSYSTEM onto root-on-ZFS
-#   --ram=MB         guest RAM in MB           (default 4096)
-#   --cpus=N         vCPUs                     (default 4)
+#                    created if absent) -- use this to test installing onto ZFS
+#   --disk-size=SZ   size for a freshly-created test disk   (default 128G)
+#   --ram=MB         guest RAM in MB                         (default 16384)
+#   --cpus=N         vCPUs                                   (default 8)
+#   --no-gl          disable host GL accel (if no virglrenderer on the host)
 #   --no-kvm         force software emulation (TCG) even if KVM is available
 #
 # If no ISO is given, the newest dist/*.iso is used.
@@ -22,19 +23,23 @@ ISO=""
 UEFI=0
 USE_DISK=0
 DISK_PATH="${BS_ROOT}/run/test-disk.qcow2"
-RAM=4096
-CPUS=4
+DISK_SIZE=128G
+RAM=16384
+CPUS=8
 NOKVM=0
+GL=1
 
 for arg in "$@"; do
     case "$arg" in
         --uefi)        UEFI=1 ;;
         --disk)        USE_DISK=1 ;;
         --disk=*)      USE_DISK=1; DISK_PATH="${arg#*=}" ;;
+        --disk-size=*) DISK_SIZE="${arg#*=}" ;;
         --ram=*)       RAM="${arg#*=}" ;;
         --cpus=*)      CPUS="${arg#*=}" ;;
         --no-kvm)      NOKVM=1 ;;
-        -h|--help)     sed -n '3,20p' "$0"; exit 0 ;;
+        --no-gl)       GL=0 ;;
+        -h|--help)     sed -n '3,22p' "$0"; exit 0 ;;
         -*)            die "unknown option: $arg" ;;
         *)             ISO="$arg" ;;
     esac
@@ -61,8 +66,17 @@ else
     QEMU+=(-cpu max)
 fi
 
-# Graphics + input (virtio GPU, tablet for absolute mouse).
-QEMU+=(-vga virtio -display gtk -device qemu-xhci -device usb-tablet)
+# Graphics + input. virtio-GPU with host GL (virgl) gives GNOME real 3D
+# acceleration so animations are smooth (software rendering makes GNOME feel
+# sluggish/"soulless"). Falls back to plain virtio with --no-gl.
+if [ "${GL}" -eq 1 ]; then
+    log "graphics: virtio-GPU + host GL (use --no-gl if your host lacks virglrenderer)"
+    QEMU+=(-device virtio-vga-gl -display gtk,gl=on)
+else
+    log "graphics: virtio-GPU (no GL)"
+    QEMU+=(-vga virtio -display gtk)
+fi
+QEMU+=(-device qemu-xhci -device usb-tablet)
 
 # UEFI firmware (OVMF) if requested.
 if [ "${UEFI}" -eq 1 ]; then
@@ -87,8 +101,8 @@ fi
 if [ "${USE_DISK}" -eq 1 ]; then
     mkdir -p "$(dirname "${DISK_PATH}")"
     if [ ! -f "${DISK_PATH}" ]; then
-        log "creating 32G test disk: ${DISK_PATH}"
-        qemu-img create -f qcow2 "${DISK_PATH}" 32G >/dev/null
+        log "creating ${DISK_SIZE} test disk: ${DISK_PATH}"
+        qemu-img create -f qcow2 "${DISK_PATH}" "${DISK_SIZE}" >/dev/null
     fi
     log "attaching target disk: ${DISK_PATH}"
     QEMU+=(-drive "file=${DISK_PATH},if=virtio,format=qcow2")

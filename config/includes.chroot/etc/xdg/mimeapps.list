@@ -1,9 +1,40 @@
 [Default Applications]
+# --- Emulators (ROMs) ---
 application/x-gba-rom=betriebssystem-mgba.desktop
 application/x-gameboy-rom=betriebssystem-mgba.desktop
 application/x-nes-rom=betriebssystem-nestopia.desktop
 application/x-n64-rom=betriebssystem-mupen64.desktop
 application/x-nds-rom=betriebssystem-desmume.desktop
+# --- Windows / Android ---
 application/x-ms-dos-executable=wine-exe.desktop
 application/x-msi=wine-exe.desktop
 application/vnd.android.package-archive=betriebssystem-apk.desktop
+# --- Images -> Loupe ---
+image/jpeg=org.gnome.Loupe.desktop
+image/png=org.gnome.Loupe.desktop
+image/gif=org.gnome.Loupe.desktop
+image/webp=org.gnome.Loupe.desktop
+image/tiff=org.gnome.Loupe.desktop
+image/bmp=org.gnome.Loupe.desktop
+image/heif=org.gnome.Loupe.desktop
+image/svg+xml=org.gnome.Loupe.desktop
+# --- Video / Audio -> VLC (codecs make everything play) ---
+video/mp4=vlc.desktop
+video/x-matroska=vlc.desktop
+video/webm=vlc.desktop
+video/quicktime=vlc.desktop
+video/x-msvideo=vlc.desktop
+video/mpeg=vlc.desktop
+audio/mpeg=vlc.desktop
+audio/flac=vlc.desktop
+audio/x-wav=vlc.desktop
+audio/ogg=vlc.desktop
+audio/mp4=vlc.desktop
+# --- 3D models -> f3d viewer ---
+model/stl=betriebssystem-3d.desktop
+model/obj=betriebssystem-3d.desktop
+model/gltf+json=betriebssystem-3d.desktop
+model/gltf-binary=betriebssystem-3d.desktop
+application/x-3d-model=betriebssystem-3d.desktop
+# --- Blender projects ---
+application/x-blender=blender.desktop

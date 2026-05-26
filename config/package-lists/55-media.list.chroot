@@ -1,0 +1,28 @@
+# Media: codecs so audio/video "just works", players, 3D, and Nautilus
+# thumbnailers so images/video/3D/epub preview by default.
+#
+# Full GStreamer codec set + ffmpeg
+gstreamer1.0-plugins-base
+gstreamer1.0-plugins-good
+gstreamer1.0-plugins-bad
+gstreamer1.0-plugins-ugly
+gstreamer1.0-libav
+gstreamer1.0-vaapi
+gstreamer1.0-pipewire
+ffmpeg
+libavcodec-extra
+# Players / viewers
+vlc
+mpv
+loupe
+totem
+# 3D: Blender (edit) + f3d (fast viewer; also ships 3D thumbnailers)
+blender
+f3d
+# Thumbnailers + extra image-format loaders (previews in the file manager)
+ffmpegthumbnailer
+heif-gdk-pixbuf
+heif-thumbnailer
+webp-pixbuf-loader
+gnome-epub-thumbnailer
+libheif1
