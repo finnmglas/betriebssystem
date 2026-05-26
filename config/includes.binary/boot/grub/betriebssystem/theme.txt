@@ -4,7 +4,6 @@ desktop-image: "background.png"
 desktop-image-scale-method: "fitwidth"
 desktop-color: "#000000"
 message-color: "#ffffff"
-terminal-box: "terminal_box_*.png"
 
 + boot_menu {
   left   = 32%
