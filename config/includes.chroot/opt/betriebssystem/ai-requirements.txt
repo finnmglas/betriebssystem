@@ -1,0 +1,56 @@
+# BETRIEBSSYSTEM AI/ML/data Python stack -- installed into /opt/ai-venv by the
+# 0500-ai-venv hook (latest stable from PyPI; torch is the CPU build, installed
+# separately from the PyTorch CPU index). Edit + rebuild to change.
+#
+# --- core data / scientific ---
+numpy
+pandas
+polars
+pyarrow
+scipy
+matplotlib
+seaborn
+plotly
+# --- classic ML ---
+scikit-learn
+# --- deep learning / NLP (CPU torch installed separately in the hook) ---
+transformers
+sentence-transformers
+datasets
+accelerate
+tokenizers
+# --- LLM / AI APIs ---
+openai
+anthropic
+tiktoken
+# --- web frameworks ---
+fastapi
+uvicorn[standard]
+django
+djangorestframework
+flask
+gunicorn
+# --- databases / vector stores ---
+qdrant-client
+sqlalchemy
+psycopg2-binary
+redis
+pymongo
+# --- utilities ---
+requests
+httpx
+pydantic
+python-dotenv
+tqdm
+rich
+typer
+click
+beautifulsoup4
+lxml
+pillow
+opencv-python-headless
+# --- notebooks ---
+jupyterlab
+ipython
+ipykernel
+notebook

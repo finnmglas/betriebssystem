@@ -1,0 +1,15 @@
+# Broad font coverage (Latin, CJK, symbols) + color emoji + a Characters
+# search provider so emoji/glyphs show up and preview in the GNOME overview.
+fonts-noto
+fonts-noto-cjk
+fonts-noto-extra
+fonts-noto-mono
+fonts-liberation2
+fonts-dejavu
+fonts-hack
+fonts-jetbrains-mono
+fonts-cascadia-code
+fonts-powerline
+fonts-font-awesome
+fonts-ubuntu
+gnome-characters

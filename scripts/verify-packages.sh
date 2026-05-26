@@ -14,7 +14,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 cd "${BS_ROOT}"
 
 # Packages provided by config/archives/*.list.chroot (verified out-of-band).
-THIRDPARTY="code claude-code"
+THIRDPARTY="code claude-code google-chrome-stable waydroid"
 
 LISTS=$(ls config/package-lists/*.list.chroot 2>/dev/null || true)
 [ -n "${LISTS}" ] || die "no package lists found"

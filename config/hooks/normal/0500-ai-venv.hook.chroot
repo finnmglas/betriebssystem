@@ -1,0 +1,29 @@
+#!/bin/sh
+# Build a system-wide Python AI/ML/data venv at /opt/ai-venv (latest stable from
+# PyPI; CPU PyTorch). Exposed as `ai-python`/`ai-pip` and a JupyterLab kernel.
+# Guarded + heavy (multi-GB download): a failure degrades the build, not fails it.
+set -e
+REQ=/opt/betriebssystem/ai-requirements.txt
+[ -f "${REQ}" ] || { echo "I: no ai-requirements.txt, skipping AI venv"; exit 0; }
+
+echo "I: creating /opt/ai-venv (this downloads several GB)"
+python3 -m venv /opt/ai-venv
+/opt/ai-venv/bin/pip install --no-cache-dir --upgrade pip wheel setuptools || true
+
+# CPU PyTorch from the dedicated index (avoids the multi-GB CUDA build).
+/opt/ai-venv/bin/pip install --no-cache-dir \
+    --index-url https://download.pytorch.org/whl/cpu torch torchvision \
+    || echo "W: torch (CPU) install failed (non-fatal)" >&2
+
+# Everything else from PyPI.
+/opt/ai-venv/bin/pip install --no-cache-dir -r "${REQ}" \
+    || echo "W: AI requirements install had failures (non-fatal)" >&2
+
+# Convenience launchers + JupyterLab kernel.
+ln -sf /opt/ai-venv/bin/python /usr/local/bin/ai-python
+ln -sf /opt/ai-venv/bin/pip /usr/local/bin/ai-pip
+/opt/ai-venv/bin/python -m ipykernel install --name betriebssystem-ai \
+    --display-name "BETRIEBSSYSTEM AI" --prefix /usr/local 2>/dev/null \
+    || echo "W: jupyter kernel registration failed (non-fatal)" >&2
+
+echo "I: AI venv ready (use 'ai-python', or the 'BETRIEBSSYSTEM AI' Jupyter kernel)"

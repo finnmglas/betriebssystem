@@ -1,0 +1,4 @@
+# Waydroid (run Android apps / .apk) from the official repo (config/archives/waydroid.*).
+# NOTE: works only on an INSTALLED system after `sudo waydroid init` (needs the
+# binder_linux module + a Wayland session); it cannot run from the live ISO.
+waydroid

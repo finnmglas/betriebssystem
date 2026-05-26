@@ -1,0 +1,21 @@
+[Unit]
+Description=BETRIEBSSYSTEM: pre-pull common Docker images on first boot
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+# Installed systems only (not the live session), once.
+ConditionPathExists=!/run/live/medium
+ConditionPathExists=!/var/lib/betriebssystem/docker-images.done
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/usr/bin/mkdir -p /var/lib/betriebssystem
+ExecStart=/usr/bin/docker pull postgres:latest
+ExecStart=/usr/bin/docker pull qdrant/qdrant:latest
+ExecStart=/usr/bin/docker pull python:3
+ExecStart=/usr/bin/docker pull node:lts
+ExecStartPost=/usr/bin/touch /var/lib/betriebssystem/docker-images.done
+
+[Install]
+WantedBy=multi-user.target

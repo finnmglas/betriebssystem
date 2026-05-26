@@ -1,0 +1,6 @@
+#!/bin/sh
+# Enable the first-boot service that pre-pulls common Docker images
+# (postgres, qdrant, python, node) on an installed system.
+set -e
+systemctl enable betriebssystem-docker-images.service 2>/dev/null || true
+echo "I: enabled betriebssystem-docker-images.service (pulls postgres/qdrant/python/node on first boot of an installed system)"

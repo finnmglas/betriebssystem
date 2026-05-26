@@ -1,0 +1,14 @@
+#!/bin/sh
+# Pre-install Ollama (local LLM runtime). The official script installs the
+# binary + a systemd service + an 'ollama' user; model downloads happen later
+# (user runs `ollama pull <model>`). Guarded; 'systemctl start' is expected to
+# no-op in the chroot.
+set -e
+echo "I: installing Ollama"
+if command -v curl >/dev/null 2>&1; then
+    curl -fsSL https://ollama.com/install.sh | sh \
+        || echo "W: ollama install script returned non-zero (binary/service may still be installed)" >&2
+    # Ensure the service is enabled for installed systems (start happens at boot).
+    systemctl enable ollama 2>/dev/null || true
+fi
+command -v ollama >/dev/null 2>&1 && echo "I: ollama present: $(ollama --version 2>/dev/null || true)" || echo "W: ollama not on PATH after install" >&2
