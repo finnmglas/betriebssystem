@@ -1,0 +1,12 @@
+#!/bin/sh
+# Register Flathub and enable the first-boot service that installs the GUI apps
+# which aren't in Debian (Logseq, Android Studio, Arduino IDE 2). The actual
+# `flatpak install` can't run reliably in a chroot (no session/dbus), so it is
+# deferred to first boot of an installed system.
+set -e
+if command -v flatpak >/dev/null 2>&1; then
+    echo "I: adding Flathub remote"
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
+fi
+echo "I: enabling betriebssystem-firstboot.service"
+systemctl enable betriebssystem-firstboot.service || true

@@ -1,0 +1,19 @@
+[Unit]
+Description=BETRIEBSSYSTEM first-boot setup (install Flathub apps)
+After=network-online.target
+Wants=network-online.target
+# Run only on an INSTALLED system, never in the live session (which would try
+# to download ~2 GB of Flatpaks on every boot from read-only media).
+ConditionPathExists=!/run/live/medium
+ConditionPathExists=!/var/lib/betriebssystem/firstboot.done
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/usr/bin/mkdir -p /var/lib/betriebssystem
+# Apps that are not in Debian: Logseq, Android Studio, Arduino IDE 2.
+ExecStart=/usr/bin/flatpak install -y --system --noninteractive flathub com.logseq.Logseq com.google.AndroidStudio cc.arduino.IDE2
+ExecStartPost=/usr/bin/touch /var/lib/betriebssystem/firstboot.done
+
+[Install]
+WantedBy=multi-user.target

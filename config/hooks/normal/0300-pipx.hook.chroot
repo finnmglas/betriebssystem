@@ -1,0 +1,15 @@
+#!/bin/sh
+# System-wide Python apps that are best installed via pipx (Debian's Python is
+# externally-managed, so plain pip is blocked). Installs into /opt/pipx with
+# launchers in /usr/local/bin so every user gets them. Guarded: a network hiccup
+# degrades the build rather than failing it.
+set -e
+export PIPX_HOME=/opt/pipx
+export PIPX_BIN_DIR=/usr/local/bin
+export HOME=/root
+
+echo "I: pipx install jupyterlab"
+pipx install jupyterlab || echo "W: jupyterlab install failed (non-fatal)" >&2
+
+echo "I: pipx install platformio (ESP32/Arduino embedded dev)"
+pipx install platformio || echo "W: platformio install failed (non-fatal)" >&2

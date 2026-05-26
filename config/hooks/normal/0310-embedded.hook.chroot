@@ -1,0 +1,17 @@
+#!/bin/sh
+# arduino-cli (official install script -> /usr/local/bin) and the PlatformIO
+# udev rules for serial access to dev boards. Guarded (network).
+set -e
+
+echo "I: installing arduino-cli"
+if command -v curl >/dev/null 2>&1; then
+    curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh \
+        | BINDIR=/usr/local/bin sh || echo "W: arduino-cli install failed (non-fatal)" >&2
+
+    echo "I: fetching PlatformIO udev rules"
+    curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules \
+        -o /etc/udev/rules.d/99-platformio-udev.rules || echo "W: pio udev fetch failed (non-fatal)" >&2
+fi
+
+# Serial dev boards need the user in dialout/plugdev (live user already is via
+# live-config defaults; Calamares adds these groups too).
