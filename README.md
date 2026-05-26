@@ -101,6 +101,21 @@ drops apt/dpkg logs that leak build timestamps. (A live ISO still contains
 so this is a *cosmetic* scrub, not a claim that the image is indistinguishable
 from a from-scratch distro.)
 
+## Build archive
+
+Every build is hardlinked into `archive/` with the **git commit hash** in its
+name (e.g. `BETRIEBSSYSTEM-0.1.0-g5a806a9-amd64.iso`), and a row is appended to
+the git-tracked [`archive/MANIFEST.md`](archive/MANIFEST.md) (date, version,
+commit, mode, kernel, size, sha256). The hardlink costs no extra disk.
+
+This means any past build is reproducible — `git checkout <commit>` then
+`sudo ./scripts/build.sh` — and the manifest is your index of what was built
+when. The `.iso` binaries are git-ignored (too large); the manifest is not.
+
+```bash
+make archive      # file the newest dist/ ISO into the archive manually
+```
+
 ## Branding
 
 Everything visual derives from one source of truth,
@@ -123,8 +138,9 @@ config/includes.chroot/     # files baked into the system (os-release, dconf, ca
 config/includes.binary/     # files placed on the ISO (GRUB theme)
 config/hooks/normal/        # build-time hooks (branding, dconf, zfs check, initramfs, scrub)
 branding/                   # brand.json + generate.py + generated assets
-scripts/                    # build.sh, run-qemu.sh, bootstrap-deps.sh, lib.sh
-dist/                       # built ISOs (gitignored)
+scripts/                    # build.sh, run-qemu.sh, archive-iso.sh, bootstrap-deps.sh, lib.sh
+dist/                       # latest built ISO (gitignored)
+archive/                    # hash-stamped ISOs (gitignored) + MANIFEST.md (tracked)
 ```
 
 ## Caveats / known soft spots

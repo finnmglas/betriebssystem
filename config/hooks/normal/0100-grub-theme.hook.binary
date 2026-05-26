@@ -1,36 +1,43 @@
 #!/bin/sh
 # Brand the GRUB boot menu in the binary stage:
-#   * point GRUB at our black/white-circle theme,
-#   * rename every "Debian"/"Live" menu title to "BETRIEBSSYSTEM".
+#   * force our black/white-circle theme everywhere theme.cfg is sourced,
+#   * rename "Live system ..." menu titles to BETRIEBSSYSTEM,
+#   * silence the SeaBIOS-era startup beep.
+#
+# NOTE: live-build runs *.hook.binary with the working directory set to
+# binary/ (it does `cd binary` first), so paths here are relative to binary/.
 # The theme assets themselves arrive via config/includes.binary/boot/grub/.
 set -e
 
-GRUB_DIR="binary/boot/grub"
-THEME="/boot/grub/betriebssystem/theme.txt"
+GRUB="boot/grub"
+if [ ! -d "${GRUB}" ]; then
+    echo "I: no ${GRUB} (cwd=$(pwd)), skipping grub theme"
+    exit 0
+fi
 
-[ -d "${GRUB_DIR}" ] || { echo "I: no ${GRUB_DIR}, skipping grub theme"; exit 0; }
+# 1. Force our theme unconditionally. live-build's stock theme.cfg only enables
+#    a theme when /boot/grub/splash.png exists; we replace it outright.
+if [ -f "${GRUB}/theme.cfg" ]; then
+    cat > "${GRUB}/theme.cfg" <<'EOF'
+set color_normal=light-gray/black
+set color_highlight=white/black
+set theme=/boot/grub/betriebssystem/theme.txt
+export theme
+EOF
+fi
 
-for cfg in "${GRUB_DIR}/grub.cfg" "${GRUB_DIR}/config.cfg"; do
+# 2. Rebrand menu titles and remove the startup beep, across every grub config
+#    (BIOS grub.cfg/config.cfg and the EFI one under x86_64-efi/).
+for cfg in "${GRUB}"/grub.cfg "${GRUB}"/config.cfg "${GRUB}"/*/grub.cfg; do
     [ -f "${cfg}" ] || continue
-
-    # Inject theme directive once.
-    if ! grep -q "set theme=${THEME}" "${cfg}"; then
-        {
-            echo ""
-            echo "# --- BETRIEBSSYSTEM theme ---"
-            echo "if [ -f ${THEME} ]; then"
-            echo "  set theme=${THEME}"
-            echo "  export theme"
-            echo "fi"
-        } >> "${cfg}"
-    fi
-
-    # Rebrand visible menu entry titles.
     sed -i \
-        -e 's/Debian GNU\/Linux/BETRIEBSSYSTEM/g' \
-        -e 's/Debian Live/BETRIEBSSYSTEM/g' \
-        -e 's/\bDebian\b/BETRIEBSSYSTEM/g' \
+        -e 's/Live system (amd64 fail-safe mode)/BETRIEBSSYSTEM (fail-safe)/g' \
+        -e 's/Live system (amd64)/BETRIEBSSYSTEM/g' \
+        -e 's/Live system/BETRIEBSSYSTEM/g' \
+        -e 's@Debian GNU/Linux@BETRIEBSSYSTEM@g' \
+        -e '/^insmod play/d' \
+        -e '/^play /d' \
         "${cfg}"
 done
 
-echo "I: GRUB menu rebranded to BETRIEBSSYSTEM"
+echo "I: GRUB themed + rebranded to BETRIEBSSYSTEM (cwd=$(pwd))"

@@ -42,8 +42,10 @@ installer config on top.
 | `config/includes.binary/boot/grub/betriebssystem/` | GRUB theme (`theme.txt` + generated `background.png`). |
 | `config/hooks/normal/` | Build hooks. `*.hook.chroot` run in the chroot; `*.hook.binary` run in the binary/ISO stage. Numbered for ordering. |
 | `branding/brand.json` + `generate.py` | Source of truth + rasterizer for all visual assets. |
-| `scripts/build.sh` | Root orchestrator: deps → branding → mode marker → `lb clean/config/build` → collect ISO into `dist/`. |
+| `scripts/build.sh` | Root orchestrator: deps → branding → mode marker → `lb clean/config/build` → collect ISO into `dist/` → archive a hash-stamped copy. |
 | `scripts/run-qemu.sh` | Boot an ISO: KVM autodetect, BIOS/UEFI, optional ZFS-install test disk. |
+| `scripts/archive-iso.sh` | Hardlink the ISO into `archive/` named with the git commit hash; append a row to the tracked `archive/MANIFEST.md`. `BS_ARCHIVE_COMMIT` overrides the stamped commit. |
+| `archive/MANIFEST.md` | Tracked log of every archived build (date, version, commit, mode, kernel, size, sha256). ISO binaries beside it are git-ignored. |
 | `scripts/lib.sh` | Shared bash helpers (logging, `require_root`, `restore_ownership`, `kvm_available`). |
 
 ### Build hooks, in order
@@ -69,6 +71,15 @@ installer config on top.
 
 ## Gotchas / things that bit us
 
+- **`.hook.binary` runs with CWD = `binary/`** (live-build does `cd binary`
+  first), so paths inside binary hooks are relative to `binary/` (e.g.
+  `boot/grub`, *not* `binary/boot/grub`). `.hook.chroot` runs with CWD `/`.
+  This bit us once — the GRUB theme hook silently skipped on the first build.
+- **GRUB menu titles** are `Live system (amd64)` etc. (not "Debian"), and the
+  theme is gated by live-build's `boot/grub/theme.cfg` (only themes if
+  `splash.png` exists). Our binary hook overwrites `theme.cfg` to force our
+  theme and renames the "Live system" titles. Confirm both still match if
+  live-build changes its grub templates.
 - `lb config` symlinks **stock live-build hooks** into `config/hooks/normal/`
   and `config/hooks/live/`, and writes a default `config/package-lists/live.list.chroot`.
   `.gitignore` excludes those and force-includes only our six authored hooks.
@@ -98,9 +109,11 @@ installer config on top.
       Calamares `zfs`/`partition`/`mount` config to the trixie module version.
 - [ ] Confirm GDM autologin for the live `user` (live-config should handle it;
       verify on first boot).
-- [ ] Verify the GRUB theme actually renders (background + colors) in both BIOS
-      and UEFI; the menu-title rebrand is robust, the themed background is
-      best-effort and untested here.
+- [x] First successful build: `BETRIEBSSYSTEM-0.1.0-amd64.iso`, 1.9 GB, ZFS
+      module built against 6.12.90, boots in QEMU (2026-05-26, commit 5a806a9).
+- [x] Fixed the GRUB theme hook (wrong CWD assumption — see Gotchas). Applies on
+      the next build; visually verify the themed background + renamed menu in
+      QEMU once rebuilt.
 - [ ] Optional: native ZFS encryption flow (toggle in `etc/calamares/modules/zfs.conf`).
 
 ## Self-update protocol

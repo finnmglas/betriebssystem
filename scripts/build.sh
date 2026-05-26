@@ -67,4 +67,9 @@ mv -f "${SRC_ISO}" "${OUT}"
 
 log "ISO ready: ${OUT}"
 log "size: $(du -h "${OUT}" | cut -f1)"
+
+# Archive a hash-stamped copy + manifest row (before lb clean wipes binary/, so
+# archive-iso.sh can still read the kernel version from the build tree).
+"${BS_ROOT}/scripts/archive-iso.sh" "${OUT}" || warn "archiving failed (non-fatal)"
+
 log "boot it:  ./scripts/run-qemu.sh ${OUT}"

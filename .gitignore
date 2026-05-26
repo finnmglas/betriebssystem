@@ -52,6 +52,10 @@ chroot.files
 /run/
 /dist/
 
+# Archived ISO binaries are too big for git; the manifest IS tracked.
+/archive/*.iso
+/archive/*.sha256
+
 # Editor / OS noise
 .DS_Store
 *.swp

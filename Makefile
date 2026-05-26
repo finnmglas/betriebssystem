@@ -29,6 +29,10 @@ build: ## Build a dev ISO (root)
 release: ## Build a release ISO with build tells scrubbed (root)
 	sudo RELEASE=1 ./scripts/build.sh
 
+.PHONY: archive
+archive: ## File the newest dist ISO into archive/ stamped with the commit hash
+	./scripts/archive-iso.sh
+
 .PHONY: run
 run: ## Boot the newest ISO in QEMU (BIOS)
 	./scripts/run-qemu.sh
