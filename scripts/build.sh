@@ -51,6 +51,15 @@ lb clean noauto >/dev/null 2>&1 || true
 log "lb config"
 lb config
 
+# Stamp all filesystem timestamps to 2002-06-01 00:00 UTC (a fixed, "polished"
+# date) instead of random build times. SOURCE_DATE_EPOCH covers reproducible
+# build outputs; MKSQUASHFS_OPTIONS -all-time/-mkfs-time sets EVERY file time in
+# the live squashfs (live-build only appends to MKSQUASHFS_OPTIONS, so this
+# flows through). Calamares preserves these on install.
+export SOURCE_DATE_EPOCH=1022889600
+export MKSQUASHFS_OPTIONS="-all-time 1022889600 -mkfs-time 1022889600"
+log "filesystem timestamps pinned to 2002-06-01 (epoch ${SOURCE_DATE_EPOCH})"
+
 log "lb build  (this downloads packages and can take 20-60+ minutes)"
 set +e
 lb build 2>&1 | tee build.log

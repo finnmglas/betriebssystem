@@ -30,12 +30,15 @@ audio/flac=vlc.desktop
 audio/x-wav=vlc.desktop
 audio/ogg=vlc.desktop
 audio/mp4=vlc.desktop
-# --- 3D models -> f3d viewer ---
+# --- 3D models -> f3d viewer (standard mime types f3d's thumbnailer also uses) ---
 model/stl=betriebssystem-3d.desktop
+model/3mf=betriebssystem-3d.desktop
 model/obj=betriebssystem-3d.desktop
 model/gltf+json=betriebssystem-3d.desktop
 model/gltf-binary=betriebssystem-3d.desktop
-application/x-3d-model=betriebssystem-3d.desktop
+model/vrml=betriebssystem-3d.desktop
+model/iges=betriebssystem-3d.desktop
+application/vnd.ply=betriebssystem-3d.desktop
 # --- Blender projects ---
 application/x-blender=blender.desktop
 # --- Folders ALWAYS open in Nautilus (incl. VS Code "Open Containing Folder") ---

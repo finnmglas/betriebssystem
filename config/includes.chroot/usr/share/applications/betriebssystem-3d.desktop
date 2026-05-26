@@ -6,5 +6,5 @@ Exec=f3d %f
 TryExec=f3d
 NoDisplay=true
 Terminal=false
-MimeType=model/stl;model/obj;model/gltf+json;model/gltf-binary;application/x-3d-model;
+MimeType=model/stl;model/3mf;model/obj;model/gltf+json;model/gltf-binary;model/vrml;model/iges;application/vnd.ply;
 Categories=Graphics;Viewer;

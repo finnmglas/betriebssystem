@@ -35,7 +35,13 @@ default-folder-viewer='list-view'
 show-hidden-files=true
 show-delete-permanently=true
 show-create-link=true
-click-policy='double'
+# NOTE: Nautilus click-policy is GLOBAL (single OR double for everything); it has
+# no "folders single, files double" mode. Set to single so folders open on one
+# click (files do too).
+click-policy='single'
+# Sort by modification time, oldest first.
+default-sort-order='mtime'
+default-sort-in-reverse-order=false
 recursive-search='always'
 show-image-thumbnails='always'
 
