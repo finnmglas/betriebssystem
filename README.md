@@ -32,6 +32,32 @@ The whole image is defined declaratively by [`auto/config`](auto/config) and the
 `config/` tree, so it is reproducible and extensible. See
 [`CLAUDE.md`](CLAUDE.md) for the architecture and how to extend it.
 
+## What's included
+
+A batteries-included workstation, not a minimal shell:
+
+- **Desktop:** GNOME 48/Wayland, dark, white-circle branding, dash favorites
+  (Firefox · Files · Logseq · VS Code · Android Studio · Disks · Task Manager · Terminal).
+- **Dev:** VS Code, Claude Code (CLI), Git/LFS, build-essential/clang/gdb/cmake/meson;
+  languages Python·Node·Go·Rust·Java·Kotlin·Ruby·Lua·PHP·Fortran·Lisp;
+  JupyterLab + PlatformIO (pipx); Docker.
+- **Shell:** xonsh as the interactive shell (bash stays the login shell), with fzf + zoxide.
+- **Emulation / cross-run:** mGBA, Dolphin, Stella, Atari800, Hatari, Mupen64Plus,
+  DeSmuME, Nestopia, mednafen, RetroArch (+cores). **Double-click a ROM and it runs**
+  (`.gba/.gb/.gbc/.nes/.n64/.nds`); `.exe`/`.msi` → **Wine**; `.apk` → Waydroid (post-install).
+- **Virtualization:** GNOME Boxes, virt-manager, QEMU/KVM, libvirt, Docker.
+- **Embedded:** Arduino (IDE + CLI), ESP32 via PlatformIO/esptool, serial tools + udev rules.
+- **Apps:** LibreOffice, Logseq, Android Studio (Flatpak, first boot).
+- **Drivers:** broad firmware + Mesa/Vulkan + VA/VDPAU + microcode for wide hardware support.
+
+Install channels: Debian apt (verified pre-build by `scripts/verify-packages.sh`),
+signed third-party apt repos (VS Code, Claude Code), Flatpak/Flathub (first boot,
+installed systems only), and pipx. See [`CLAUDE.md`](CLAUDE.md) for the full map.
+
+> **Caching:** apt `.deb`s persist in `cache/` (gitignored), so rebuilds are fast.
+> Flatpak/pipx/arduino-cli fetch over the network at build or first boot.
+> Expect a release ISO around **8–15 GB** with the full stack.
+
 ## Quickstart
 
 > Full details in [`QUICKSTART.md`](QUICKSTART.md).

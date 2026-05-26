@@ -48,14 +48,36 @@ installer config on top.
 | `archive/MANIFEST.md` | Tracked log of every archived build (date, version, commit, mode, kernel, size, sha256). ISO binaries beside it are git-ignored. |
 | `scripts/lib.sh` | Shared bash helpers (logging, `require_root`, `restore_ownership`, `kvm_available`). |
 
-### Build hooks, in order
+### Build hooks, in order (authored hooks use the 0xxx range; stock live-build hooks start at 1000)
 
 - `0100-branding.hook.chroot` — set Plymouth default theme; make launcher exec.
-- `0100-grub-theme.hook.binary` — point GRUB at our theme; rename menu titles to BETRIEBSSYSTEM.
-- `0200-dconf.hook.chroot` — `dconf update` so GNOME defaults apply.
+- `0100-grub-theme.hook.binary` — force our GRUB theme, rename menu titles to BETRIEBSSYSTEM, drop the boot beep, inject the "Install BETRIEBSSYSTEM" entry.
+- `0150-wine-multiarch.hook.chroot` — enable i386, install Wine 32/64-bit (guarded).
+- `0200-dconf.hook.chroot` — `dconf update` so GNOME defaults/favorites apply.
+- `0250-xonsh.hook.chroot` — register xonsh; make interactive bash `exec xonsh`.
+- `0260-desktop-db.hook.chroot` — rebuild MIME + desktop DBs (file associations).
+- `0300-pipx.hook.chroot` — JupyterLab + PlatformIO system-wide via pipx (guarded, network).
 - `0300-zfs-check.hook.chroot` — **fails the build** if `zfs.ko` didn't build for the live kernel.
+- `0310-embedded.hook.chroot` — arduino-cli + PlatformIO udev rules (guarded, network).
+- `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service`.
 - `0900-initramfs.hook.chroot` — rebuild initramfs (embeds Plymouth + ZFS).
 - `9000-release-scrub.hook.chroot` — if `/etc/.bs-buildmode` == `release`, scrub cosmetic tells; always remove the marker.
+
+### Software stack (the "real distro" layer)
+
+- **apt** (verified, in `config/package-lists/`): GNOME, LibreOffice, Firefox-ESR,
+  emulators (mgba/dolphin/stella/atari800/hatari/mupen64/desmume/nestopia/mednafen
+  + RetroArch & cores), languages (py/node/go/rust/java/kotlin/ruby/lua/php/fortran/
+  lisp + build tooling), virt (docker/qemu/gnome-boxes/virt-manager/libvirt),
+  embedded (arduino/esptool/serial), drivers/firmware, shells (xonsh/zsh/fzf/zoxide).
+- **Third-party apt repos** (`config/archives/`, key in trusted.gpg.d): VS Code
+  (`code`, Microsoft), Claude Code (`claude-code`, Anthropic — verified genuine repo).
+- **Flatpak (first boot, installed systems only)**: Logseq, Android Studio, Arduino IDE 2.
+- **pipx (system-wide /opt/pipx)**: JupyterLab, PlatformIO.
+- **Wine** (i386 multiarch) for `.exe`. **File associations**: custom MIME types +
+  self-owned launcher `.desktop`s map `.gba/.gb/.gbc/.nes/.n64/.nds` → emulators,
+  `.exe/.msi` → Wine, `.apk` → Waydroid (post-install). `.iso` intentionally NOT remapped.
+- **Waydroid (APKs)**: NOT baked in — needs binder/Wayland and post-install setup.
 
 ## How to work here
 
@@ -82,8 +104,24 @@ installer config on top.
   live-build changes its grub templates.
 - `lb config` symlinks **stock live-build hooks** into `config/hooks/normal/`
   and `config/hooks/live/`, and writes a default `config/package-lists/live.list.chroot`.
-  `.gitignore` excludes those and force-includes only our six authored hooks.
-  If you add a hook, add a matching `!`-include line.
+  `.gitignore` excludes those; authored hooks are tracked via the `0*.hook.*`
+  glob (stock hooks start at 1000), plus the one `9000-release-scrub`. **Name new
+  authored hooks in the 0xxx range** or they won't be tracked.
+- **Package lists take ONE package per line, no inline `#` comments** — live-build
+  passes lines to apt verbatim. Use full-line comments only.
+- **Wine needs i386 multiarch**, which a package list can't enable; it's installed
+  in `0150-wine-multiarch.hook.chroot` after bootstrap. Same pattern for anything
+  needing `dpkg --add-architecture` or apt actions mid-build.
+- **`config/archives/*.list.chroot` + `*.key.chroot`** add signed third-party
+  repos; live-build sets them up BEFORE package install, so repo packages can go
+  in normal package lists. Keys land in `/etc/apt/trusted.gpg.d/` (global trust),
+  so no `signed-by=` needed; use `[arch=amd64]` to avoid i386 fetch errors.
+- **`scripts/verify-packages.sh`** is a pre-flight (run by build.sh) that fails
+  fast on a mistyped/removed package. Add genuinely-third-party names to its
+  `THIRDPARTY` allowlist.
+- **Flatpak/pipx/arduino-cli run at build (network) or first boot**, not cached
+  in-repo (only apt .debs persist in `cache/`). The first-boot Flatpak service is
+  gated `!/run/live/medium` so it never runs in a live session.
 - Chroot hooks **don't inherit the parent shell's env**. Build mode crosses into
   the chroot via the `/etc/.bs-buildmode` marker file (written by `build.sh`,
   consumed+deleted by `9000-release-scrub`). Use the same pattern for new
@@ -115,6 +153,16 @@ installer config on top.
       themed background and renamed "BETRIEBSSYSTEM" menu confirmed in QEMU on
       build g34310ef (2026-05-26).
 - [ ] Optional: native ZFS encryption flow (toggle in `etc/calamares/modules/zfs.conf`).
+- [ ] **Rebuild + boot-test the full software stack** (added 2026-05-26): names
+      pre-verified, but the big build (VS Code/Claude repos, Wine i386 hook,
+      pipx, ~120 pkgs) hasn't run end-to-end yet. Expect ISO ~8–15 GB.
+- [ ] Verify on first boot: dash favorites populate, xonsh is the terminal shell,
+      `.gba`/`.exe` double-click associations work, GRUB "Install" entry launches
+      Calamares (the `betriebssystem-install` autostart path).
+- [ ] Verify the first-boot Flatpak service installs Logseq/Android Studio/Arduino
+      IDE 2 on an installed system (and stays off in live).
+- [ ] Possible follow-ups: cache vendored downloads (arduino-cli, pip wheels) into
+      `cache/vendor/`; Waydroid post-install setup script; trim ISO size.
 
 ## Self-update protocol
 
