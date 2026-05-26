@@ -16,6 +16,8 @@
 	"extensions.autoCheckUpdates": false,
 	"git.openRepositoryInParentFolders": "never",
 	"security.workspace.trust.enabled": false,
+	"window.newWindowDimensions": "maximized",
+	"window.restoreWindows": "all",
 
 	"//chat": "Hide the command center + Copilot/agent chat entirely (the 'sign in / welcome to chat' nag).",
 	"window.commandCenter": false,

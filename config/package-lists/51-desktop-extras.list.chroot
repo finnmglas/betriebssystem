@@ -1,0 +1,7 @@
+# Desktop quality-of-life: Blur my Shell (packaged, GNOME-48-matched) + Nautilus
+# helpers + the python-nautilus binding for our custom Nautilus extensions.
+gnome-shell-extension-blur-my-shell
+gnome-shell-extension-dashtodock
+nautilus-admin
+nautilus-wipe
+python3-nautilus

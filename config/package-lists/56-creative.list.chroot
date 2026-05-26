@@ -1,0 +1,7 @@
+# Creative / media editing.
+gimp
+inkscape
+audacity
+# PDF tooling used by the Nautilus right-click actions (compress / merge).
+ghostscript
+poppler-utils
