@@ -62,11 +62,6 @@ import shutil
 if shutil.which('zoxide'):
     execx($(zoxide init xonsh), 'exec', __xonsh__.ctx, filename='zoxide')
 
-# --- greeting: a quick system summary on interactive login ---
-if shutil.which('fastfetch') and $XONSH_INTERACTIVE:
-    try:
-        fastfetch
-    except Exception:
-        pass
+# (No auto-greeting on terminal open. Run `fastfetch` yourself if you want specs.)
 
 # Drop a per-machine override in ~/.config/xonsh/rc.d/ to extend this.

@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 REPO = Path(__file__).resolve().parent.parent
 BRAND = json.loads((REPO / "branding" / "brand.json").read_text())
@@ -60,39 +60,6 @@ def save(img: Image.Image, rel: str) -> None:
     print(f"  wrote {rel}  ({img.width}x{img.height})")
 
 
-def _font(size: int):
-    """A bold TTF if available, else PIL's default bitmap font."""
-    for path in (
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-    ):
-        if Path(path).exists():
-            return ImageFont.truetype(path, size)
-    return ImageFont.load_default()
-
-
-def wallpaper(width: int, height: int) -> Image.Image:
-    """Circle on black + a subtle bottom-right hint: the name and how to reach
-    the overview (the Super key)."""
-    img = circle(width, height, transparent_bg=False, diameter_frac=FRAC * 0.5)
-    draw = ImageDraw.Draw(img)
-    margin = int(height * 0.045)
-    name_f = _font(int(height * 0.026))
-    hint_f = _font(int(height * 0.018))
-    name = "BETRIEBSSYSTEM"
-    hint = "Press  Super (⌘)  for Activities / Overview"
-    # right-aligned, stacked, dim grey so it reads but stays understated.
-    nb = draw.textbbox((0, 0), name, font=name_f)
-    hb = draw.textbbox((0, 0), hint, font=hint_f)
-    nx = width - margin - (nb[2] - nb[0])
-    hx = width - margin - (hb[2] - hb[0])
-    hy = height - margin - (hb[3] - hb[1])
-    ny = hy - int(height * 0.012) - (nb[3] - nb[1])
-    draw.text((nx, ny), name, font=name_f, fill="#9a9a9a")
-    draw.text((hx, hy), hint, font=hint_f, fill="#6a6a6a")
-    return img
-
-
 def write_svg() -> None:
     """Canonical, hand-editable source mark (1000x1000 viewport)."""
     r = int(1000 * FRAC / 2)
@@ -124,8 +91,8 @@ def main() -> None:
     save(circle(1920, 1080, transparent_bg=False, diameter_frac=FRAC * 0.6),
          f"{B}/boot/grub/betriebssystem/background.png")
 
-    # Desktop + login wallpaper: circle on black, 4K, with the bottom-right hint.
-    save(wallpaper(3840, 2160),
+    # Desktop + login wallpaper: just the circle on black, 4K (no text).
+    save(circle(3840, 2160, transparent_bg=False, diameter_frac=FRAC * 0.5),
          f"{C}/usr/share/backgrounds/betriebssystem/wallpaper.png")
 
     # App-grid / login-screen logo (transparent).

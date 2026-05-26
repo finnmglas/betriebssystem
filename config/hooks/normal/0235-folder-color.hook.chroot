@@ -1,0 +1,33 @@
+#!/bin/sh
+# Install costales/folder-color (right-click -> colored folders / emblems) -- not
+# in Debian. FULLY guarded: any failure is skipped silently. Nautilus ignores a
+# python extension it can't load, and missing icons just mean no recolor, so this
+# can never break the build or the file manager.
+set -e
+command -v curl >/dev/null 2>&1 || { echo "I: no curl; skipping folder-color"; exit 0; }
+
+EXT=/usr/share/nautilus-python/extensions
+TMP="$(mktemp -d)"
+ok=0
+for branch in master main; do
+    if curl -fsSL "https://github.com/costales/folder-color/archive/refs/heads/${branch}.tar.gz" \
+         -o "${TMP}/fc.tgz" 2>/dev/null && tar -xzf "${TMP}/fc.tgz" -C "${TMP}" 2>/dev/null; then
+        ok=1; break
+    fi
+done
+
+SRC="$(find "${TMP}" -maxdepth 1 -type d -name 'folder-color-*' 2>/dev/null | head -n1)"
+if [ "${ok}" = "1" ] && [ -n "${SRC}" ] && [ -f "${SRC}/extension/folder-color.py" ]; then
+    mkdir -p "${EXT}"
+    cp "${SRC}/extension/folder-color.py" "${EXT}/folder-color.py"
+    [ -d "${SRC}/icons/hicolor" ] && cp -rn "${SRC}/icons/hicolor/." /usr/share/icons/hicolor/ 2>/dev/null || true
+    if [ -d "${SRC}/icons/Yaru" ]; then
+        mkdir -p /usr/share/icons/Yaru
+        cp -rn "${SRC}/icons/Yaru/." /usr/share/icons/Yaru/ 2>/dev/null || true
+    fi
+    gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
+    echo "I: installed folder-color (right-click colored folders)"
+else
+    echo "W: folder-color unavailable; skipped" >&2
+fi
+rm -rf "${TMP}"
