@@ -1,0 +1,8 @@
+{
+  "name": "BETRIEBSSYSTEM",
+  "background": "#000000",
+  "foreground": "#ffffff",
+  "circle_diameter_fraction": 0.34,
+  "supersample": 4,
+  "_comment": "Single source of truth for BETRIEBSSYSTEM branding. circle_diameter_fraction is the circle diameter as a fraction of the shorter image side. Run `make branding` (or python3 branding/generate.py) after editing."
+}

@@ -1,0 +1,30 @@
+# BETRIEBSSYSTEM GRUB theme: white circle on black, sparse menu.
+title-text: ""
+desktop-image: "background.png"
+desktop-image-scale-method: "fitwidth"
+desktop-color: "#000000"
+message-color: "#ffffff"
+terminal-box: "terminal_box_*.png"
+
++ boot_menu {
+  left   = 32%
+  top    = 60%
+  width  = 36%
+  height = 34%
+  item_color          = "#7a7a7a"
+  selected_item_color = "#ffffff"
+  item_height         = 28
+  item_spacing        = 10
+  item_padding        = 4
+  icon_width          = 0
+  icon_height         = 0
+}
+
++ label {
+  top   = 92%
+  left  = 0
+  width = 100%
+  align = "center"
+  color = "#5a5a5a"
+  text  = "BETRIEBSSYSTEM"
+}

@@ -18,7 +18,25 @@
 /config/common
 /config/source
 /config/build
-/config/*.hook.*
+
+# `lb config` regenerates this default live package list every run.
+/config/package-lists/live.list.chroot
+
+# `lb config` also symlinks stock hooks into config/hooks/live/ (none authored).
+/config/hooks/live/
+
+# `lb config` symlinks live-build's stock hooks into config/hooks/normal/.
+# Ignore everything there, then force-track only the hooks we author.
+/config/hooks/normal/*
+!/config/hooks/normal/0100-branding.hook.chroot
+!/config/hooks/normal/0100-grub-theme.hook.binary
+!/config/hooks/normal/0200-dconf.hook.chroot
+!/config/hooks/normal/0300-zfs-check.hook.chroot
+!/config/hooks/normal/0900-initramfs.hook.chroot
+!/config/hooks/normal/9000-release-scrub.hook.chroot
+
+# Build-mode marker written by scripts/build.sh (consumed by a chroot hook)
+/config/includes.chroot/etc/.bs-buildmode
 
 # Generated installer/runtime caches
 *.log

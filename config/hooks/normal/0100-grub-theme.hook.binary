@@ -1,0 +1,36 @@
+#!/bin/sh
+# Brand the GRUB boot menu in the binary stage:
+#   * point GRUB at our black/white-circle theme,
+#   * rename every "Debian"/"Live" menu title to "BETRIEBSSYSTEM".
+# The theme assets themselves arrive via config/includes.binary/boot/grub/.
+set -e
+
+GRUB_DIR="binary/boot/grub"
+THEME="/boot/grub/betriebssystem/theme.txt"
+
+[ -d "${GRUB_DIR}" ] || { echo "I: no ${GRUB_DIR}, skipping grub theme"; exit 0; }
+
+for cfg in "${GRUB_DIR}/grub.cfg" "${GRUB_DIR}/config.cfg"; do
+    [ -f "${cfg}" ] || continue
+
+    # Inject theme directive once.
+    if ! grep -q "set theme=${THEME}" "${cfg}"; then
+        {
+            echo ""
+            echo "# --- BETRIEBSSYSTEM theme ---"
+            echo "if [ -f ${THEME} ]; then"
+            echo "  set theme=${THEME}"
+            echo "  export theme"
+            echo "fi"
+        } >> "${cfg}"
+    fi
+
+    # Rebrand visible menu entry titles.
+    sed -i \
+        -e 's/Debian GNU\/Linux/BETRIEBSSYSTEM/g' \
+        -e 's/Debian Live/BETRIEBSSYSTEM/g' \
+        -e 's/\bDebian\b/BETRIEBSSYSTEM/g' \
+        "${cfg}"
+done
+
+echo "I: GRUB menu rebranded to BETRIEBSSYSTEM"

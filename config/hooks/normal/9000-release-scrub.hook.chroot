@@ -1,0 +1,40 @@
+#!/bin/sh
+# Release hardening: erase cosmetic tells that this is a Debian live-build
+# image. Triggered when scripts/build.sh wrote the marker /etc/.bs-buildmode
+# containing "release" (chroot hooks can't inherit the parent's env, so a
+# marker file is how the build mode crosses into the chroot).
+#
+# This is a *cosmetic* scrub: a live ISO inevitably ships live-boot/live-config
+# to boot from squashfs. We remove version strings, banners and build metadata
+# that name Debian or the build host -- not the live machinery itself.
+set -e
+
+MODE="dev"
+[ -f /etc/.bs-buildmode ] && MODE="$(cat /etc/.bs-buildmode)"
+
+if [ "${MODE}" = "release" ]; then
+    echo "I: RELEASE build -- scrubbing live-build/Debian tells"
+
+    : > /etc/motd 2>/dev/null || true
+    rm -f /etc/update-motd.d/10-uname 2>/dev/null || true
+    rm -f /etc/live-build* 2>/dev/null || true
+    rm -rf /var/log/live 2>/dev/null || true
+
+    if command -v lsb_release >/dev/null 2>&1; then
+        cat > /etc/lsb-release <<'EOF'
+DISTRIB_ID=BETRIEBSSYSTEM
+DISTRIB_RELEASE=0.1.0
+DISTRIB_CODENAME=kreis
+DISTRIB_DESCRIPTION="BETRIEBSSYSTEM 0.1.0"
+EOF
+    fi
+
+    rm -f /var/log/bootstrap.log /var/log/dpkg.log /var/log/alternatives.log 2>/dev/null || true
+    rm -rf /var/lib/apt/lists/* 2>/dev/null || true
+    echo "I: release scrub complete"
+else
+    echo "I: dev build, skipping release scrub"
+fi
+
+# Never ship the marker itself.
+rm -f /etc/.bs-buildmode 2>/dev/null || true

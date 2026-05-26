@@ -1,0 +1,35 @@
+---
+componentName: betriebssystem
+
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 800px,520px
+
+strings:
+    productName:         BETRIEBSSYSTEM
+    shortProductName:    BETRIEBSSYSTEM
+    version:             0.1.0
+    shortVersion:        0.1.0
+    versionedName:       BETRIEBSSYSTEM 0.1.0
+    shortVersionedName:  BETRIEBSSYSTEM
+    bootloaderEntryName:  BETRIEBSSYSTEM
+    productUrl:          https://github.com/finnglas/betriebssystem
+    supportUrl:          https://github.com/finnglas/betriebssystem/issues
+    knownIssuesUrl:      https://github.com/finnglas/betriebssystem/issues
+    releaseNotesUrl:     https://github.com/finnglas/betriebssystem
+    donateUrl:           ""
+
+images:
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
+    productWelcome:      "logo.png"
+
+slideshow:               "show.qml"
+slideshowAPI: 2
+
+style:
+   sidebarBackground:    "#000000"
+   sidebarText:          "#FFFFFF"
+   sidebarTextSelect:    "#000000"
+   sidebarTextHighlight: "#FFFFFF"

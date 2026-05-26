@@ -1,0 +1,8 @@
+#!/bin/sh
+# Compile the system dconf database so GNOME defaults (dark theme, wallpaper,
+# login logo) take effect.
+set -e
+if command -v dconf >/dev/null 2>&1; then
+    echo "I: compiling system dconf database"
+    dconf update || true
+fi

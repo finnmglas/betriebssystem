@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Install BETRIEBSSYSTEM
+GenericName=System Installer
+Comment=Install BETRIEBSSYSTEM to disk (root-on-ZFS)
+Exec=pkexec /usr/bin/calamares
+Icon=betriebssystem-logo
+Terminal=false
+StartupNotify=true
+Categories=System;Settings;
+Keywords=installer;install;calamares;zfs;

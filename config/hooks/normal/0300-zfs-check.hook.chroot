@@ -1,0 +1,15 @@
+#!/bin/sh
+# Verify the ZFS DKMS module built against the live kernel. Fail the build
+# loudly if it didn't -- a silent miss would ship an ISO that can't touch ZFS.
+set -e
+echo "I: DKMS status:"
+dkms status || true
+
+KVER="$(ls /lib/modules | sort -V | tail -n1)"
+if modinfo -k "${KVER}" zfs >/dev/null 2>&1; then
+    echo "I: zfs.ko present for kernel ${KVER}"
+else
+    echo "E: zfs.ko NOT found for kernel ${KVER} -- ZFS support would be broken." >&2
+    echo "E: check that linux-headers-amd64 matches the installed kernel." >&2
+    exit 1
+fi

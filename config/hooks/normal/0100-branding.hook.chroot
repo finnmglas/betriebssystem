@@ -1,0 +1,14 @@
+#!/bin/sh
+# Apply BETRIEBSSYSTEM branding inside the chroot.
+set -e
+
+echo "I: setting Plymouth default theme to betriebssystem"
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+    plymouth-set-default-theme betriebssystem || true
+fi
+
+# Make the installer launcher on the live desktop trusted/executable so GNOME
+# does not gray it out.
+if [ -f /etc/skel/Desktop/install-betriebssystem.desktop ]; then
+    chmod +x /etc/skel/Desktop/install-betriebssystem.desktop
+fi
