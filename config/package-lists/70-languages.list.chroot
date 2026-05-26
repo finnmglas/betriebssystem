@@ -16,9 +16,10 @@ nodejs
 npm
 # Systems
 golang-go
+# Rust: Debian's system rustc+cargo (works offline out-of-the-box). NOT rustup,
+# which Conflicts with rustc/cargo -- users can install rustup themselves later.
 rustc
 cargo
-rustup
 # JVM
 default-jdk
 default-jre

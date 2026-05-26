@@ -122,9 +122,13 @@ installer config on top.
   repos; live-build sets them up BEFORE package install, so repo packages can go
   in normal package lists. Keys land in `/etc/apt/trusted.gpg.d/` (global trust),
   so no `signed-by=` needed; use `[arch=amd64]` to avoid i386 fetch errors.
-- **`scripts/verify-packages.sh`** is a pre-flight (run by build.sh) that fails
-  fast on a mistyped/removed package. Add genuinely-third-party names to its
-  `THIRDPARTY` allowlist.
+- **`scripts/verify-packages.sh`** is a pre-flight (run by build.sh): it checks
+  every list entry resolves AND runs a dependency solve (`apt-get -s install -o
+  Dir::State::status=/dev/null`, a fresh-system view so the host's own packages
+  don't cause false conflicts) to catch CONFLICTS like rustc-vs-rustup. Add
+  genuinely-third-party names to its `THIRDPARTY` allowlist.
+- **rustc/cargo vs rustup conflict**: they're mutually exclusive in Debian. We
+  ship system `rustc`+`cargo` (works offline); don't re-add `rustup`.
 - **Flatpak/pipx/arduino-cli run at build (network) or first boot**, not cached
   in-repo (only apt .debs persist in `cache/`). The first-boot Flatpak service is
   gated `!/run/live/medium` so it never runs in a live session.

@@ -39,3 +39,22 @@ if [ "${missing}" -gt 0 ]; then
     die "${missing} package(s) do not resolve -- fix the list(s) before building"
 fi
 log "all package-list entries resolve"
+
+# Phase 2: a real dependency solve, to catch CONFLICTS (e.g. rustc vs rustup)
+# that a name-existence check misses. apt-get -s needs no root; it runs against
+# the host's state (same trixie suite + areas), excluding third-party packages
+# the host's repos may lack.
+solve=""
+for p in ${pkgs}; do
+    case " ${THIRDPARTY} " in *" ${p} "*) continue ;; esac
+    solve="${solve} ${p}"
+done
+# Dir::State::status=/dev/null makes apt solve as if NOTHING is installed, so the
+# host's own packages (e.g. its OpenZFS build) can't create false conflicts --
+# this mirrors a fresh chroot.
+log "dependency solve (apt-get -s install, fresh-system view)..."
+if ! out=$(apt-get install -s -o Dir::State::status=/dev/null ${solve} 2>&1); then
+    echo "${out}" | grep -iE 'conflict|unmet|unable to locate|broken|could not be installed|conflicting' | sed 's/^/    /' >&2
+    die "dependency solve failed -- conflict or unmet dependency (see above)"
+fi
+log "dependency solve clean -- no conflicts"
