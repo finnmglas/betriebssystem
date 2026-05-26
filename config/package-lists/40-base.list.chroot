@@ -12,3 +12,6 @@ usbutils
 bash-completion
 network-manager
 firmware-linux-free
+keyboard-configuration
+console-setup
+locales

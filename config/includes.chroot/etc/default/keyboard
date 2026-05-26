@@ -1,0 +1,6 @@
+# BETRIEBSSYSTEM: German keyboard layout (language stays English via locale).
+XKBMODEL="pc105"
+XKBLAYOUT="de"
+XKBVARIANT=""
+XKBOPTIONS=""
+BACKSPACE="guess"

@@ -1,5 +1,10 @@
 # BETRIEBSSYSTEM default xonsh config.
-# xonsh is a Python-powered shell; this is a sane, fast starter.
+# xonsh is a Python-powered shell; this is a sane, fast, colourful starter.
+
+# --- colours / highlighting (needs python3-prompt-toolkit + python3-pygments) ---
+$XONSH_COLOR_STYLE = 'monokai'
+$XONSH_AUTOPAIR = True
+$COLOR_RESULTS = True
 
 # --- behaviour ---
 $XONSH_SHOW_TRACEBACK = False
@@ -9,7 +14,6 @@ $XONSH_HISTORY_SIZE = (20000, 'commands')
 $COMPLETIONS_CONFIRM = True
 $AUTO_CD = True
 $DOTGLOB = True
-$XONSH_AUTOPAIR = True
 
 # --- prompt: user@host:cwd (git branch) [exit-code] ---
 $PROMPT = ('{env_name}{BOLD_WHITE}{user}@{hostname}{RESET}:'
@@ -18,22 +22,51 @@ $PROMPT = ('{env_name}{BOLD_WHITE}{user}@{hostname}{RESET}:'
            '{RED}{last_return_code_if_nonzero:[{}]}{RESET}'
            '{BOLD_WHITE}${RESET} ')
 
-# --- aliases ---
-aliases['ll'] = 'ls -lah --color=auto'
-aliases['la'] = 'ls -A --color=auto'
-aliases['l']  = 'ls -CF --color=auto'
-aliases['grep'] = 'grep --color=auto'
-aliases['gs'] = 'git status'
-aliases['gd'] = 'git diff'
-aliases['gl'] = 'git log --oneline --graph --decorate'
-aliases['..'] = 'cd ..'
-aliases['...'] = 'cd ../..'
+# --- aliases: clearing / navigation / safety / git / handy ---
+aliases['cls']    = 'clear'
+aliases['c']      = 'clear'
+aliases['ll']     = 'ls -lah --color=auto'
+aliases['la']     = 'ls -A --color=auto'
+aliases['l']      = 'ls -CF --color=auto'
+aliases['grep']   = 'grep --color=auto'
+aliases['..']     = 'cd ..'
+aliases['...']    = 'cd ../..'
+aliases['....']   = 'cd ../../..'
+aliases['mkdir']  = 'mkdir -pv'
+aliases['df']     = 'df -h'
+aliases['du']     = 'du -h'
+aliases['free']   = 'free -h'
+aliases['ports']  = 'ss -tulpn'
+aliases['path']   = 'echo @($PATH)'
+aliases['reload'] = 'source ~/.xonshrc'
+aliases['please'] = 'sudo'
+# git
+aliases['gs']  = 'git status'
+aliases['gd']  = 'git diff'
+aliases['ga']  = 'git add'
+aliases['gc']  = 'git commit'
+aliases['gp']  = 'git push'
+aliases['gl']  = 'git log --oneline --graph --decorate'
+aliases['gco'] = 'git checkout'
 
-# --- optional tool integrations (guarded; both shipped in BETRIEBSSYSTEM) ---
+# mkcd: make a dir and enter it
+def _mkcd(args):
+    if not args:
+        print("usage: mkcd <dir>"); return
+    import os
+    os.makedirs(args[0], exist_ok=True); os.chdir(args[0])
+aliases['mkcd'] = _mkcd
+
+# --- tool integrations (guarded; all shipped in BETRIEBSSYSTEM) ---
 import shutil
 if shutil.which('zoxide'):
     execx($(zoxide init xonsh), 'exec', __xonsh__.ctx, filename='zoxide')
-if shutil.which('fzf'):
-    $fzf_history_binding = "c-r"   # Ctrl-R fuzzy history (if xontrib-fzf present)
 
-# Drop a per-machine override file in ~/.config/xonsh/rc.d/ to extend this.
+# --- greeting: a quick system summary on interactive login ---
+if shutil.which('fastfetch') and $XONSH_INTERACTIVE:
+    try:
+        fastfetch
+    except Exception:
+        pass
+
+# Drop a per-machine override in ~/.config/xonsh/rc.d/ to extend this.

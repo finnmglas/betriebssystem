@@ -5,6 +5,9 @@ evince
 file-roller
 gnome-system-monitor
 gnome-disk-utility
+gnome-shell-extension-manager
+fonts-firacode
+fonts-noto-color-emoji
 
 # Flatpak + Flathub UI (apps from Flathub are installed by the first-boot
 # service in config/includes.chroot/etc/systemd -- see 0400-flatpak hook).

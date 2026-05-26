@@ -1,6 +1,10 @@
 # Shells + CLI niceties. xonsh is set as the default interactive shell for the
 # skel user; see the 0250-xonsh hook and /etc/skel/.xonshrc.
 xonsh
+# xonsh syntax highlighting + rich prompt need prompt_toolkit + pygments.
+python3-prompt-toolkit
+python3-pygments
+python3-setproctitle
 zsh
 fzf
 zoxide

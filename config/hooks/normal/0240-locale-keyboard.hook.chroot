@@ -1,0 +1,10 @@
+#!/bin/sh
+# Generate the English locale and lock in the German keyboard layout for the
+# installed system (the live session gets these via the boot append too).
+set -e
+if command -v locale-gen >/dev/null 2>&1; then
+    echo "I: generating en_US.UTF-8 locale"
+    locale-gen
+    update-locale LANG=en_US.UTF-8
+fi
+echo "I: keyboard layout set to 'de' via /etc/default/keyboard"

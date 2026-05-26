@@ -17,6 +17,44 @@ primary-color='#000000'
 color-scheme='prefer-dark'
 gtk-theme='Adwaita-dark'
 enable-animations=true
+enable-hot-corners=true
+clock-show-weekday=true
+show-battery-percentage=true
+
+[org/gnome/mutter]
+edge-tiling=true
+dynamic-workspaces=true
+
+[org/gnome/desktop/input-sources]
+# German keyboard layout; system language stays English (en_US.UTF-8).
+sources=[('xkb', 'de')]
+xkb-options=['terminate:ctrl_alt_bksp']
+
+[org/gnome/nautilus/preferences]
+default-folder-viewer='list-view'
+show-hidden-files=true
+show-delete-permanently=true
+show-create-link=true
+click-policy='double'
+recursive-search='always'
+show-image-thumbnails='always'
+
+[org/gnome/nautilus/list-view]
+use-tree-view=true
+default-zoom-level='small'
+default-visible-columns=['name', 'size', 'type', 'date_modified']
+
+[org/gtk/settings/file-chooser]
+show-hidden=true
+sort-directories-first=true
+
+[org/gtk/gtk4/settings/file-chooser]
+show-hidden=true
+sort-directories-first=true
+
+[org/gnome/desktop/peripherals/touchpad]
+tap-to-click=true
+natural-scroll=true
 
 [org/gnome/login-screen]
 logo='/usr/share/pixmaps/betriebssystem-logo.png'
