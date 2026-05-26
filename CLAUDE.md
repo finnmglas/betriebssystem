@@ -112,6 +112,12 @@ installer config on top.
 - **Wine needs i386 multiarch**, which a package list can't enable; it's installed
   in `0150-wine-multiarch.hook.chroot` after bootstrap. Same pattern for anything
   needing `dpkg --add-architecture` or apt actions mid-build.
+- **Archive areas have TWO variables.** `--archive-areas` sets `LB_ARCHIVE_AREAS`
+  but the chroot's main Debian `sources.list` is generated from
+  `LB_PARENT_ARCHIVE_AREAS` — you must set **`--parent-archive-areas` too**, or
+  the extra component (we hit this with `non-free` → `libretro-snes9x` "Unable to
+  locate package"). `auto/config` sets both. `verify-packages.sh` checks the host
+  (which has the same areas), so keep host and chroot areas aligned.
 - **`config/archives/*.list.chroot` + `*.key.chroot`** add signed third-party
   repos; live-build sets them up BEFORE package install, so repo packages can go
   in normal package lists. Keys land in `/etc/apt/trusted.gpg.d/` (global trust),
