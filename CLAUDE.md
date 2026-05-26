@@ -62,7 +62,10 @@ installer config on top.
 - `0300-zfs-check.hook.chroot` — **fails the build** if `zfs.ko` didn't build for the live kernel.
 - `0310-embedded.hook.chroot` — arduino-cli + PlatformIO udev rules (guarded, network).
 - `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service` (installs Logseq/Android Studio/Arduino IDE2 on first boot of an INSTALLED system).
-- `0420-vscode-ext.hook.chroot` — preinstall VS Code extensions into `/etc/skel` (guarded; `code --install-extension` as root needs `--no-sandbox`).
+- `0420-vscode-ext.hook.chroot` — preinstall VS Code extensions into `/etc/skel` (guarded; needs `--no-sandbox`; clears the ext cache so the shipped betriebssystem.terminals ext also loads).
+- `0500-ai-venv.hook.chroot` — build `/opt/ai-venv` (CPU torch + DS/ML/web/vector stack from `ai-requirements.txt`); `ai-python` + Jupyter kernel. Guarded, multi-GB.
+- `0510-ollama.hook.chroot` — install Ollama (local LLM runtime) via its script.
+- `0520-docker-images.hook.chroot` — enable first-boot service pulling postgres/qdrant/python/node (installed systems only).
 - `0900-initramfs.hook.chroot` — rebuild initramfs (embeds Plymouth + ZFS).
 - `9000-release-scrub.hook.chroot` — if `/etc/.bs-buildmode` == `release`, scrub cosmetic tells; always remove the marker.
 
@@ -74,13 +77,22 @@ installer config on top.
   lisp + build tooling), virt (docker/qemu/gnome-boxes/virt-manager/libvirt),
   embedded (arduino/esptool/serial), drivers/firmware, shells (xonsh/zsh/fzf/zoxide).
 - **Third-party apt repos** (`config/archives/`, key in trusted.gpg.d): VS Code
-  (`code`, Microsoft), Claude Code (`claude-code`, Anthropic — verified genuine repo).
+  (`code`, Microsoft), Claude Code (`claude-code`, Anthropic), **Chrome**
+  (`google-chrome-stable`), **Waydroid** (`waydroid`, waydro.id trixie dist).
+- **Media/3D**: codecs (full GStreamer + ffmpeg), VLC/mpv/Loupe/Totem, Blender +
+  f3d (3D viewer & thumbnailer), Cura/PrusaSlicer/FreeCAD; image/video/3D/epub
+  previews via thumbnailers.
+- **AI/ML**: `/opt/ai-venv` (`ai-python` + Jupyter kernel), Ollama, first-boot
+  Docker images (postgres/qdrant/python/node, installed systems).
 - **Flatpak (first boot, installed systems only)**: Logseq, Android Studio, Arduino IDE 2.
 - **pipx (system-wide /opt/pipx)**: JupyterLab, PlatformIO.
-- **Wine** (i386 multiarch) for `.exe`. **File associations**: custom MIME types +
-  self-owned launcher `.desktop`s map `.gba/.gb/.gbc/.nes/.n64/.nds` → emulators,
-  `.exe/.msi` → Wine, `.apk` → Waydroid (post-install). `.iso` intentionally NOT remapped.
-- **Waydroid (APKs)**: NOT baked in — needs binder/Wayland and post-install setup.
+- **Fonts/emoji**: Noto (+CJK/extra), Liberation/DejaVu/Hack/JetBrains/Cascadia/
+  Ubuntu, FontAwesome, Powerline, color-emoji + gnome-characters.
+- **File associations** (`mimeapps.list` + launcher `.desktop`s): ROMs→emulators,
+  `.exe/.msi`→Wine, `.apk`→Waydroid (post-install), images→Loupe, video/audio→VLC,
+  3D→f3d, `.blend`→Blender, folders→Nautilus, code/text/data→VS Code. `.iso` NOT remapped.
+- **Waydroid (APKs)**: kernel has `binder_linux` (module, no BINDERFS); the trixie
+  repo package is shipped but works only post-install (`waydroid init` + session).
 
 ## How to work here
 
@@ -112,6 +124,18 @@ installer config on top.
   authored hooks in the 0xxx range** or they won't be tracked.
 - **Package lists take ONE package per line, no inline `#` comments** — live-build
   passes lines to apt verbatim. Use full-line comments only.
+- **Don't define custom MIME globs that shadow shared-mime-info's `model/*` types.**
+  A custom `application/x-3d-model` glob on `.3mf`/`.ply` broke f3d's thumbnails
+  AND open (f3d's thumbnailers key on `model/3mf`, `application/vnd.ply`, etc.).
+  Bind the standard types instead. Third-party-key files in `config/archives/`:
+  binary keys must still be named `*.key.chroot` (live-build only scans that
+  suffix; it picks `.gpg` vs `.asc` by content).
+- **Nautilus `click-policy` is GLOBAL** (single OR double for everything) — there
+  is no "folders single, files double" mode. We use `single`.
+- **Filesystem timestamps** are pinned to 2002-06-01 (epoch 1022889600) by
+  exporting `SOURCE_DATE_EPOCH` + `MKSQUASHFS_OPTIONS="-all-time … -mkfs-time …"`
+  in `build.sh` (live-build only *appends* to `MKSQUASHFS_OPTIONS`, so the env
+  value flows into mksquashfs). Calamares preserves these on install.
 - **Wine needs i386 multiarch**, which a package list can't enable; it's installed
   in `0150-wine-multiarch.hook.chroot` after bootstrap. Same pattern for anything
   needing `dpkg --add-architecture` or apt actions mid-build.
