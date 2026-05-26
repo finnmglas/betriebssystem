@@ -40,7 +40,7 @@ recursive-search='always'
 show-image-thumbnails='always'
 
 [org/gnome/nautilus/list-view]
-use-tree-view=true
+use-tree-view=false
 default-zoom-level='small'
 default-visible-columns=['name', 'size', 'type', 'date_modified']
 
