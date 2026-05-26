@@ -22,5 +22,9 @@ for ext in \
         --install-extension "${ext}" >/dev/null 2>&1 \
         || echo "W: vscode extension ${ext} failed (non-fatal)" >&2
 done
+# Clear the extension cache so VS Code rescans the whole dir on first launch and
+# picks up our hand-shipped extension (betriebssystem.terminals, placed via skel)
+# alongside the marketplace ones.
+rm -f "${EXTDIR}/extensions.json" "${EXTDIR}/.obsolete" 2>/dev/null || true
 chmod -R a+rX "${EXTDIR}" 2>/dev/null || true
 rm -rf /tmp/code-build 2>/dev/null || true

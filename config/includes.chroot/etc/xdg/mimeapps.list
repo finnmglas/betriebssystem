@@ -38,3 +38,33 @@ model/gltf-binary=betriebssystem-3d.desktop
 application/x-3d-model=betriebssystem-3d.desktop
 # --- Blender projects ---
 application/x-blender=blender.desktop
+# --- Folders ALWAYS open in Nautilus (incl. VS Code "Open Containing Folder") ---
+inode/directory=org.gnome.Nautilus.desktop
+# --- Code / text / data files -> VS Code (gedit + gnome-text-editor as fallback) ---
+text/plain=code.desktop
+text/markdown=code.desktop
+text/csv=code.desktop
+text/css=code.desktop
+text/x-python=code.desktop
+text/x-csrc=code.desktop
+text/x-c++src=code.desktop
+text/x-chdr=code.desktop
+text/x-c++hdr=code.desktop
+text/x-java=code.desktop
+text/x-go=code.desktop
+text/rust=code.desktop
+text/x-sql=code.desktop
+text/x-shellscript=code.desktop
+text/x-lua=code.desktop
+text/x-tex=code.desktop
+text/x-log=code.desktop
+application/json=code.desktop
+application/x-yaml=code.desktop
+application/yaml=code.desktop
+application/toml=code.desktop
+application/xml=code.desktop
+text/xml=code.desktop
+application/javascript=code.desktop
+application/x-shellscript=code.desktop
+application/x-php=code.desktop
+application/x-ruby=code.desktop

@@ -1,0 +1,10 @@
+{
+  "name": "terminals",
+  "displayName": "BETRIEBSSYSTEM Terminals",
+  "description": "Opens 3 xonsh terminals in the bottom panel on startup.",
+  "publisher": "betriebssystem",
+  "version": "1.0.0",
+  "engines": { "vscode": "^1.70.0" },
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js"
+}

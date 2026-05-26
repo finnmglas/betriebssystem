@@ -5,6 +5,9 @@ evince
 file-roller
 gnome-system-monitor
 gnome-disk-utility
+gnome-font-viewer
+gnome-text-editor
+gedit
 gnome-shell-extension-manager
 gnome-shell-extension-tiling-assistant
 fonts-firacode
