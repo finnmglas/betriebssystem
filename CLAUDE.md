@@ -163,9 +163,11 @@ installer config on top.
       themed background and renamed "BETRIEBSSYSTEM" menu confirmed in QEMU on
       build g34310ef (2026-05-26).
 - [ ] Optional: native ZFS encryption flow (toggle in `etc/calamares/modules/zfs.conf`).
-- [ ] **Rebuild + boot-test the full software stack** (added 2026-05-26): names
-      pre-verified, but the big build (VS Code/Claude repos, Wine i386 hook,
-      pipx, ~120 pkgs) hasn't run end-to-end yet. Expect ISO ~8–15 GB.
+- [x] **Full software-stack build succeeded** (2026-05-26, commit gf51427a):
+      4.1 GB ISO (flatpaks/Android Studio deferred to first boot), VS Code +
+      Claude Code repos worked, all 119 pkgs installed, GRUB install entry added.
+      Boot-test in QEMU underway — still confirm the guarded network hooks landed
+      (VS Code, claude CLI, Wine, JupyterLab, PlatformIO, arduino-cli).
 - [ ] Verify on first boot: dash favorites populate, xonsh is the terminal shell,
       `.gba`/`.exe` double-click associations work, GRUB "Install" entry launches
       Calamares (the `betriebssystem-install` autostart path).
