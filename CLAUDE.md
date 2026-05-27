@@ -93,7 +93,12 @@ installer config on top.
 - **File associations** (`mimeapps.list` + launcher `.desktop`s): ROMs→emulators,
   `.exe/.msi`→Wine, `.apk`→Waydroid (post-install), images→Loupe, video/audio→VLC,
   3D→f3d, `.blend`→Blender, folders→Nautilus, code/text/data→VS Code. `.iso` NOT remapped.
-- **Waydroid (APKs)**: kernel has `binder_linux` (module, no BINDERFS); the trixie
+- **Waydroid (APKs)**: kernel has `binder_linux` (module, no BINDERFS). Because
+  there's no BINDERFS, the module must be **loaded with legacy device params** —
+  `etc/modules-load.d/waydroid.conf` loads it at boot and
+  `etc/modprobe.d/waydroid.conf` sets `options binder_linux
+  devices=binder,hwbinder,vndbinder` so `/dev/binder`/`hwbinder`/`vndbinder`
+  exist; without them `waydroid init`/container has nothing to talk to. The trixie
   repo package is shipped but works only post-install. `0540-waydroid` enables a
   first-boot `waydroid init` service (installed systems only, gated `!/run/live/medium`,
   once) that downloads the Android image and brings up waydroid-container. The

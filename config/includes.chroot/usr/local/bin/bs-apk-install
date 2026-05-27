@@ -6,6 +6,10 @@
 # needs init + a session, neither of which exists on the live medium).
 set -eu
 
+# Terminal=true launchers close the window the instant the script exits, so on
+# any error pause long enough for the user to read it.
+trap '[ $? -eq 0 ] || { printf "\n[press Enter to close] "; read -r _; }' EXIT
+
 APK="${1:-}"
 [ -n "${APK}" ] || { echo "usage: bs-apk-install FILE.apk"; exit 2; }
 command -v waydroid >/dev/null 2>&1 || { echo "Waydroid is not installed on this system."; exit 1; }
