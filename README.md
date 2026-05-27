@@ -22,6 +22,33 @@ GNOME on Wayland, root-on-ZFS, and a single white circle for a face.
 
 ---
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="branding/screens/gnome-overview.png" width="100%"><br>
+      <sub><b>GNOME 48 on Wayland</b> — the activities overview, white circle on black.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="branding/screens/claude-native.png" width="100%"><br>
+      <sub><b>Claude Code</b> — ready in the terminal (xonsh) on first boot.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="branding/screens/smart-menu-binds.png" width="100%"><br>
+      <sub><b>Smart right-click actions</b> in Files — Open in VS Code, Compress / Merge PDF.</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="branding/screens/grub-menu.png" width="100%"><br>
+      <sub><b>Hybrid BIOS/UEFI boot menu</b> — live boot, Install, and fail-safe.</sub>
+    </td>
+  </tr>
+</table>
+
+---
+
 ## What this is
 
 An AI-ready Linux distribution / operating system that can be **live-built from
@@ -155,33 +182,6 @@ the full hook order, the branding pipeline, and the gotchas that bit us. Read it
 before changing the image shape.
 
 `make help` lists every target.
-
----
-
-## Screenshots
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="branding/screens/gnome-overview.png" width="100%"><br>
-      <sub><b>GNOME 48 on Wayland</b> — the activities overview, white circle on black.</sub>
-    </td>
-    <td align="center" width="50%">
-      <img src="branding/screens/claude-native.png" width="100%"><br>
-      <sub><b>Claude Code</b> — ready in the terminal (xonsh) on first boot.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <img src="branding/screens/smart-menu-binds.png" width="100%"><br>
-      <sub><b>Smart right-click actions</b> in Files — Open in VS Code, Compress / Merge PDF.</sub>
-    </td>
-    <td align="center" width="50%">
-      <img src="branding/screens/grub-menu.png" width="100%"><br>
-      <sub><b>Hybrid BIOS/UEFI boot menu</b> — live boot, Install, and fail-safe.</sub>
-    </td>
-  </tr>
-</table>
 
 ---
 
