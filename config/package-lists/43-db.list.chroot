@@ -1,0 +1,8 @@
+# Database CLI clients + friendly TUIs, so the postgres/qdrant/etc. Docker images
+# (pulled on first boot) and local SQLite files are actually usable.
+sqlite3
+postgresql-client
+default-mysql-client
+redis-tools
+pgcli
+litecli

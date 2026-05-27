@@ -1,0 +1,8 @@
+# Dev workflow: GitHub CLI, shell linting/formatting, terminal editors, sync/ssh.
+gh
+shellcheck
+shfmt
+neovim
+micro
+rsync
+openssh-client

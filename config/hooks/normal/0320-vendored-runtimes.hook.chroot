@@ -1,0 +1,69 @@
+#!/bin/sh
+# Language runtimes that aren't in Debian: Zig, Deno, Bun. Downloaded through the
+# vendor cache (vendor-fetch.sh) so rebuilds reuse them. FULLY guarded: any
+# download/extract failure is skipped with a warning, never fails the build.
+# Installed under /opt with launchers in /usr/local/bin.
+set -e
+command -v curl >/dev/null 2>&1 || { echo "I: no curl; skipping vendored runtimes"; exit 0; }
+. /usr/local/lib/betriebssystem/vendor-fetch.sh
+
+# --- Zig ---------------------------------------------------------------------
+# Resolve the latest stable from ziglang.org's index (needs jq, in 41-cli).
+if command -v jq >/dev/null 2>&1; then
+    idx="$(curl -fsSL https://ziglang.org/download/index.json 2>/dev/null || true)"
+    zver="$(printf '%s' "${idx}" | jq -r 'keys[]' 2>/dev/null | grep -E '^[0-9]' | sort -V | tail -n1)"
+    zurl="$(printf '%s' "${idx}" | jq -r --arg v "${zver}" '.[$v]["x86_64-linux"].tarball // empty' 2>/dev/null)"
+    if [ -n "${zurl}" ]; then
+        ztar="$(mktemp /tmp/zig-XXXXXX.tar.xz)"
+        if vendor_get "${zurl}" "${ztar}"; then
+            rm -rf /opt/zig
+            mkdir -p /opt/zig
+            if tar -xf "${ztar}" -C /opt/zig --strip-components=1 2>/dev/null; then
+                ln -sf /opt/zig/zig /usr/local/bin/zig
+                echo "I: installed zig ${zver}"
+            else
+                echo "W: zig extract failed (skipped)" >&2; rm -rf /opt/zig
+            fi
+        else
+            echo "W: zig download failed (skipped)" >&2
+        fi
+        rm -f "${ztar}"
+    else
+        echo "W: could not resolve zig version (skipped)" >&2
+    fi
+else
+    echo "W: jq missing; skipping zig" >&2
+fi
+
+# --- Deno --------------------------------------------------------------------
+# GitHub's /releases/latest/download/ redirect always points at the newest build.
+if command -v unzip >/dev/null 2>&1; then
+    dzip="$(mktemp /tmp/deno-XXXXXX.zip)"
+    if vendor_get "https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip" "${dzip}" \
+        && unzip -oq "${dzip}" -d /usr/local/bin deno 2>/dev/null; then
+        chmod +x /usr/local/bin/deno
+        echo "I: installed deno ($(/usr/local/bin/deno --version 2>/dev/null | head -n1 || true))"
+    else
+        echo "W: deno install failed (skipped)" >&2
+    fi
+    rm -f "${dzip}"
+
+# --- Bun ---------------------------------------------------------------------
+    bzip="$(mktemp /tmp/bun-XXXXXX.zip)"
+    btmp="$(mktemp -d)"
+    if vendor_get "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip" "${bzip}" \
+        && unzip -oq "${bzip}" -d "${btmp}" 2>/dev/null; then
+        bbin="$(find "${btmp}" -type f -name bun | head -n1)"
+        if [ -n "${bbin}" ]; then
+            install -m 0755 "${bbin}" /usr/local/bin/bun
+            echo "I: installed bun ($(/usr/local/bin/bun --version 2>/dev/null || true))"
+        else
+            echo "W: bun binary not found in archive (skipped)" >&2
+        fi
+    else
+        echo "W: bun install failed (skipped)" >&2
+    fi
+    rm -rf "${bzip}" "${btmp}"
+else
+    echo "W: unzip missing; skipping deno/bun" >&2
+fi

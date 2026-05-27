@@ -1,0 +1,4 @@
+# Rootless containers (podman) and containerized dev environments (distrobox),
+# alongside the docker/qemu/libvirt stack in 80-virt.
+podman
+distrobox

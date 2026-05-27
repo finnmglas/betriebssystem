@@ -1,0 +1,21 @@
+# Modern CLI / developer-experience tooling. Pairs with the fzf/zoxide/xonsh
+# setup already in 96-shell. One package per line, no inline comments.
+ripgrep
+fd-find
+bat
+eza
+jq
+yq
+tree
+tmux
+btop
+ncdu
+duf
+procs
+git-delta
+tealdeer
+direnv
+hyperfine
+entr
+httpie
+aria2

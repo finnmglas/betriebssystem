@@ -1,0 +1,14 @@
+# Additional language runtimes beyond 70-languages (py/node/go/rust/java/kotlin/
+# ruby/lua/php/fortran/lisp). R for data science (pairs with the AI venv),
+# Haskell, BEAM (Elixir/Erlang), OCaml, Clojure, Scala, TypeScript, Composer.
+r-base
+ghc
+cabal-install
+elixir
+erlang
+ocaml
+clojure
+leiningen
+scala
+node-typescript
+composer

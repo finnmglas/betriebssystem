@@ -37,7 +37,7 @@ installer config on top.
 |------|------|
 | `auto/config` | The entire `lb config` call. Suite, areas, bootloaders, ISO metadata, boot append. **Edit here to change the image shape.** |
 | `auto/build`, `auto/clean` | Thin logged wrappers around `lb build` / `lb clean`. |
-| `config/package-lists/*.list.chroot` | Packages, grouped: `00-desktop` (GNOME), `10-live`, `20-zfs`, `30-installer` (Calamares), `40-base`. |
+| `config/package-lists/*.list.chroot` | Packages, grouped: `00-desktop` (GNOME), `10-live`, `20-zfs`, `30-installer` (Calamares), `40-base`, `41-cli` (modern CLI/DX), `42-devtools`, `43-db` (DB clients), `44-toolchain` (build/net), `70/71-languages`, `81-containers`, plus media/creative/cad/emulators/etc. |
 | `config/includes.chroot/` | Files copied into the system at their absolute paths: `etc/os-release`, hostname, `etc/dconf/**` (GNOME defaults), `etc/calamares/**` (installer), Plymouth theme, skel desktop launcher. |
 | `config/includes.binary/boot/grub/betriebssystem/` | GRUB theme (`theme.txt` + generated `background.png`). |
 | `config/hooks/normal/` | Build hooks. `*.hook.chroot` run in the chroot; `*.hook.binary` run in the binary/ISO stage. Numbered for ordering. |
@@ -62,6 +62,7 @@ installer config on top.
 - `0300-pipx.hook.chroot` — JupyterLab + PlatformIO system-wide via pipx (guarded, network).
 - `0300-zfs-check.hook.chroot` — **fails the build** if `zfs.ko` didn't build for the live kernel.
 - `0310-embedded.hook.chroot` — arduino-cli (release tarball) + PlatformIO udev rules (guarded, network; both via the vendor cache).
+- `0320-vendored-runtimes.hook.chroot` — Zig/Deno/Bun (not in Debian) into `/opt` + `/usr/local/bin` via the vendor cache; fully guarded. Zig version resolved from ziglang.org's `index.json`; Deno/Bun from GitHub `releases/latest`.
 - `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service` (installs Logseq/Android Studio/Arduino IDE2 on first boot of an INSTALLED system).
 - `0420-vscode-ext.hook.chroot` — preinstall VS Code extensions into `/etc/skel` (guarded; needs `--no-sandbox`; clears the ext cache so the shipped betriebssystem.terminals ext also loads).
 - `0500-ai-venv.hook.chroot` — build `/opt/ai-venv` (CPU torch + DS/ML/web/vector stack from `ai-requirements.txt`); `ai-python` + Jupyter kernel. Guarded, multi-GB.
@@ -76,8 +77,17 @@ installer config on top.
 - **apt** (verified, in `config/package-lists/`): GNOME, LibreOffice, Firefox-ESR,
   emulators (mgba/dolphin/stella/atari800/hatari/mupen64/desmume/nestopia/mednafen
   + RetroArch & cores), languages (py/node/go/rust/java/kotlin/ruby/lua/php/fortran/
-  lisp + build tooling), virt (docker/qemu/gnome-boxes/virt-manager/libvirt),
+  lisp + R/Haskell/Elixir+Erlang/OCaml/Clojure/Scala/TypeScript/Composer + build
+  tooling), virt (docker/podman/distrobox/qemu/gnome-boxes/virt-manager/libvirt),
   embedded (arduino/esptool/serial), drivers/firmware, shells (xonsh/zsh/fzf/zoxide).
+- **CLI / developer experience** (`41-cli`,`42-devtools`,`43-db`,`44-toolchain`):
+  ripgrep/fd/bat/eza/jq/yq/tree/tmux/btop/ncdu/duf/procs/git-delta/tealdeer/direnv/
+  hyperfine/entr/httpie/aria2; gh/shellcheck/shfmt/neovim/micro/rsync/openssh-client;
+  DB clients (sqlite3 + postgresql/mysql/redis clients, pgcli/litecli); native
+  build toolchain (python3-dev/pkgconf/autotools/flex/bison) + net tools
+  (nmap/tcpdump/mtr/dig/socat/netcat/iperf3).
+- **Vendored runtimes** (`0320-vendored-runtimes`, not in Debian, via vendor cache):
+  Zig, Deno, Bun in `/opt` + `/usr/local/bin`.
 - **Third-party apt repos** (`config/archives/`, key in trusted.gpg.d): VS Code
   (`code`, Microsoft), Claude Code (`claude-code`, Anthropic), **Chrome**
   (`google-chrome-stable`), **Waydroid** (`waydroid`, waydro.id trixie dist).

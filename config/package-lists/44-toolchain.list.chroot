@@ -1,0 +1,19 @@
+# Native build toolchain (compiling pip wheels / source builds beyond
+# build-essential) and networking/diagnostic tools.
+python3-dev
+pkgconf
+autoconf
+automake
+libtool
+flex
+bison
+nmap
+tcpdump
+mtr-tiny
+bind9-dnsutils
+socat
+netcat-openbsd
+traceroute
+net-tools
+whois
+iperf3
