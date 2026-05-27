@@ -4,181 +4,163 @@
 
 # BETRIEBSSYSTEM
 
-A minimal, modern Debian-based operating system.
+An AI-ready Linux distribution — live-built from the terminal, shipping
+everything an agentic developer workload needs out of the box.
 GNOME on Wayland, root-on-ZFS, and a single white circle for a face.
 
 </div>
+
+> *Betriebssystem* is the German word for **operating system** (OS).
 
 ---
 
 ## What this is
 
-`BETRIEBSSYSTEM` is a buildable, git-tracked Debian live/install image:
+An AI-ready Linux distribution / operating system that can be **live-built from
+the terminal**, and ships with everything needed to run agentic developer
+workloads out of the box: **Claude**, **VS Code**, **Docker**, **Ollama**, **ML
+libraries**, **emulators**, and full **multimedia codecs**.
 
-- **Base:** Debian 13 *trixie* (`main contrib non-free-firmware`).
-- **Desktop:** GNOME 48 on **Wayland**, composited by **Mutter** — the modern
-  compositor. Dark by default.
-- **Filesystem:** the **installed** system runs on **ZFS** (root-on-ZFS via the
-  Calamares installer). The live image itself boots from squashfs (unavoidable
-  for live media) but ships full ZFS tooling and the kernel module.
-- **Identity:** no logos, no wordmarks, no vendor noise — just a **white circle
-  on black** everywhere (boot splash, GRUB, wallpaper, login, installer).
-- **Boot:** a single hybrid ISO that boots on both **BIOS and UEFI** via GRUB,
-  offering **live boot** and an **Install** entry.
-- **Two build flavours:** a `dev` build, and a `release` build that scrubs the
-  cosmetic tells that it was assembled with Debian live-build.
+Under the hood it's a buildable, git-tracked Debian live/install image:
+
+- **Base** — Debian 13 *trixie* (`main contrib non-free-firmware`).
+- **Desktop** — GNOME 48 on **Wayland**/Mutter, dark by default.
+- **Filesystem** — the **installed** system runs on **root-on-ZFS** (via the
+  Calamares installer). The live ISO boots from squashfs but ships full ZFS tooling.
+- **Identity** — no logos or wordmarks, just a **white circle on black**
+  everywhere (boot splash, GRUB, wallpaper, login, installer).
+- **Boot** — one hybrid ISO for **BIOS and UEFI**, with a live boot and an
+  **Install** entry.
 
 The whole image is defined declaratively by [`auto/config`](auto/config) and the
-`config/` tree, so it is reproducible and extensible. See
-[`CLAUDE.md`](CLAUDE.md) for the architecture and how to extend it.
+`config/` tree, so it's reproducible and extensible. The three things you'll
+actually do — **build**, **run**, **dev** — are below.
 
 ## What's included
 
 A batteries-included workstation, not a minimal shell:
 
-- **Desktop:** GNOME 48/Wayland, dark, white-circle branding, dash favorites
-  (Firefox · Files · Logseq · VS Code · Android Studio · Disks · Task Manager · Terminal).
-- **Dev:** VS Code, Claude Code (CLI), Git/LFS, build-essential/clang/gdb/cmake/meson;
-  languages Python·Node·Go·Rust·Java·Kotlin·Ruby·Lua·PHP·Fortran·Lisp;
-  JupyterLab + PlatformIO (pipx); Docker.
-- **Shell:** xonsh as the interactive shell (bash stays the login shell), with fzf + zoxide.
-- **Emulation / cross-run:** mGBA, Dolphin, Stella, Atari800, Hatari, Mupen64Plus,
-  DeSmuME, Nestopia, mednafen, RetroArch (+cores). **Double-click a ROM and it runs**
-  (`.gba/.gb/.gbc/.nes/.n64/.nds`); `.exe`/`.msi` → **Wine**; `.apk` → Waydroid (post-install).
-- **Virtualization:** GNOME Boxes, virt-manager, QEMU/KVM, libvirt, Docker.
-- **Embedded:** Arduino (IDE + CLI), ESP32 via PlatformIO/esptool, serial tools + udev rules.
-- **Apps:** LibreOffice, Logseq, Android Studio (Flatpak, first boot).
-- **Drivers:** broad firmware + Mesa/Vulkan + VA/VDPAU + microcode for wide hardware support.
+- **Dev** — VS Code, Claude Code (CLI), Git/LFS, build toolchain; Python · Node ·
+  Go · Rust · Java · Kotlin · Ruby · Lua · PHP · Fortran · Lisp; JupyterLab +
+  PlatformIO; Docker. Local AI: an `/opt/ai-venv` stack + Ollama.
+- **Shell** — xonsh interactive shell (bash stays the login shell), fzf + zoxide.
+- **Emulation** — double-click a ROM and it runs (`.gba/.gb/.gbc/.nes/.n64/.nds`
+  via mGBA/Dolphin/Mupen64/DeSmuME/Nestopia/RetroArch); `.exe`/`.msi` → Wine;
+  `.apk` → Waydroid (post-install).
+- **Virt / embedded** — GNOME Boxes, virt-manager, QEMU/KVM, libvirt; Arduino,
+  ESP32, serial tooling.
+- **Apps / media** — LibreOffice, Firefox, Chrome, GIMP/Inkscape/Audacity,
+  Blender + CAD/slicers, full codecs; Logseq/Android Studio/Arduino IDE (first boot).
 
-Install channels: Debian apt (verified pre-build by `scripts/verify-packages.sh`),
-signed third-party apt repos (VS Code, Claude Code), Flatpak/Flathub (first boot,
-installed systems only), and pipx. See [`CLAUDE.md`](CLAUDE.md) for the full map.
+See [`CLAUDE.md`](CLAUDE.md) for the complete software map.
 
-> **Caching:** apt `.deb`s persist in `cache/` (gitignored), so rebuilds are fast.
-> Flatpak/pipx/arduino-cli fetch over the network at build or first boot.
-> Expect a release ISO around **8–15 GB** with the full stack.
+---
 
-## Quickstart
+## Build
 
-> Full details in [`QUICKSTART.md`](QUICKSTART.md).
+Needs a **Debian/Ubuntu host** and **root** — `live-build` bootstraps a chroot
+and mounts pseudo-filesystems, so it can't run unprivileged.
 
 ```bash
-# 1. Build an ISO (needs root: live-build bootstraps a chroot). 20-60+ min.
+make deps                  # install host build deps (once)
+sudo ./scripts/build.sh    # build a dev ISO  → dist/BETRIEBSSYSTEM-0.1.0-amd64.iso
+```
+
+First build downloads packages and takes **20–60+ min**; later builds reuse the
+apt cache in `cache/` (gitignored), so they're much faster. A `.sha256` is
+written next to the ISO, and every build is also filed into
+[`archive/`](archive/MANIFEST.md) stamped with its git commit.
+
+For a **release** ISO (scrubs the cosmetic tells that it was assembled with
+live-build):
+
+```bash
+make release               # → dist/BETRIEBSSYSTEM-0.1.0-release-amd64.iso
+```
+
+> Expect a release ISO around **8–15 GB** with the full stack. Flatpak/pipx/
+> arduino-cli fetch over the network at build or first boot.
+
+## Run
+
+Boots the newest ISO in `dist/`. KVM is auto-detected (falls back to slow TCG).
+
+```bash
+make run                   # BIOS,         16G RAM / 8 vCPU
+make run-uefi              # UEFI (OVMF)
+make run-install           # UEFI + a blank disk, to test installing to ZFS
+```
+
+These wrap [`scripts/run-qemu.sh`](scripts/run-qemu.sh), which takes more knobs
+(`--ram=`, `--cpus=`, `--disk-size=`, `--no-gl`, …). You should see: a breathing
+white circle (Plymouth) → GDM → a GNOME desktop with an **Install BETRIEBSSYSTEM**
+launcher.
+
+Running QEMU needs `qemu-system-x86` (and `ovmf` for `--uefi`):
+
+```bash
+sudo apt-get install -y qemu-system-x86 ovmf
+```
+
+If `/dev/kvm` isn't usable for your user: `sudo usermod -aG kvm "$USER"`, then
+re-login.
+
+## Dev
+
+The inner loop — edit, rebuild, boot:
+
+```bash
+# edit auto/config, config/**, or branding/brand.json …
+lb config                  # validate auto/config (unprivileged, fast)
+make branding              # re-render white-circle assets after editing brand.json
+make clean                 # drop artifacts, keep apt cache → fast rebuild
 sudo ./scripts/build.sh
-
-# 2. Boot it in QEMU.
-./scripts/run-qemu.sh
+make run
 ```
 
-### Run it in QEMU (copy-paste)
+Common changes:
 
-The newest ISO in `dist/` is picked up automatically. Pick the line you want:
+| Want to…                     | Do this                                                    |
+|------------------------------|------------------------------------------------------------|
+| Add a package                | add it to a list in `config/package-lists/*.list.chroot`   |
+| Bake a file into the system  | drop it under `config/includes.chroot/<absolute-path>`     |
+| Run a build-time command     | add `config/hooks/normal/NNNN-name.hook.chroot` (0xxx range) |
+| Change the circle size       | edit `circle_diameter_fraction` in `branding/brand.json`   |
+| Change Debian suite / mirror | `BS_DISTRIBUTION=… BS_MIRROR=… sudo ./scripts/build.sh`    |
 
-```bash
-# Legacy BIOS, KVM-accelerated if available, GTK window:
-./scripts/run-qemu.sh
-
-# UEFI firmware (OVMF) instead of BIOS:
-./scripts/run-qemu.sh --uefi
-
-# UEFI + a blank 32G virtio disk, to actually test installing to root-on-ZFS:
-./scripts/run-qemu.sh --uefi --disk
-```
-
-Prefer raw QEMU? This is the equivalent of the default runner (replace the ISO
-path), KVM-accelerated:
-
-```bash
-qemu-system-x86_64 \
-  -name BETRIEBSSYSTEM -machine q35 -m 4096 -smp 4 \
-  -enable-kvm -cpu host \
-  -vga virtio -display gtk \
-  -device qemu-xhci -device usb-tablet \
-  -cdrom dist/BETRIEBSSYSTEM-0.1.0-amd64.iso -boot d
-```
-
-If `/dev/kvm` isn't usable for your user, drop `-enable-kvm -cpu host` and add
-`-cpu max` (software emulation — much slower). To join the KVM group:
-`sudo usermod -aG kvm "$USER"` then re-login.
-
-## Prerequisites
-
-A Debian/Ubuntu host. The build installs what it needs on first run, or:
-
-```bash
-make deps         # installs: live-build debootstrap squashfs-tools xorriso
-                  # mtools dosfstools grub-pc-bin grub-efi-amd64-bin python3-pil
-```
-
-QEMU for running: `sudo apt-get install qemu-system-x86 ovmf` (`ovmf` only for
-`--uefi`).
-
-## Build flavours
-
-| Command          | Result                                                        |
-|------------------|---------------------------------------------------------------|
-| `make build`     | `dev` ISO → `dist/BETRIEBSSYSTEM-<ver>-amd64.iso`             |
-| `make release`   | `release` ISO → `dist/BETRIEBSSYSTEM-<ver>-release-amd64.iso` |
-
-`release` runs an extra chroot hook that blanks the MOTD, removes live-build
-version breadcrumbs, rewrites `lsb_release` to report `BETRIEBSSYSTEM`, and
-drops apt/dpkg logs that leak build timestamps. (A live ISO still contains
-`live-boot`/`live-config` — that machinery is what lets it boot from squashfs —
-so this is a *cosmetic* scrub, not a claim that the image is indistinguishable
-from a from-scratch distro.)
-
-## Build archive
-
-Every build is hardlinked into `archive/` with the **git commit hash** in its
-name (e.g. `BETRIEBSSYSTEM-0.1.0-g5a806a9-amd64.iso`), and a row is appended to
-the git-tracked [`archive/MANIFEST.md`](archive/MANIFEST.md) (date, version,
-commit, mode, kernel, size, sha256). The hardlink costs no extra disk.
-
-This means any past build is reproducible — `git checkout <commit>` then
-`sudo ./scripts/build.sh` — and the manifest is your index of what was built
-when. The `.iso` binaries are git-ignored (too large); the manifest is not.
-
-```bash
-make archive      # file the newest dist/ ISO into the archive manually
-```
-
-## Branding
-
-Everything visual derives from one source of truth,
-[`branding/brand.json`](branding/brand.json): background `#000000`, foreground
-`#ffffff`, circle diameter as a fraction of the frame. Regenerate every asset:
-
-```bash
-make branding     # python3 branding/generate.py
-```
-
-This rewrites the Plymouth logo, GRUB background, wallpaper, and the app /
-login / Calamares logos, plus the canonical `branding/logo.svg`.
-
-## Project layout
+### Layout
 
 ```
-auto/config                 # the whole `lb config` invocation (edit this)
-config/package-lists/       # what packages go in (desktop, live, zfs, installer, base)
-config/includes.chroot/     # files baked into the system (os-release, dconf, calamares, plymouth)
-config/includes.binary/     # files placed on the ISO (GRUB theme)
-config/hooks/normal/        # build-time hooks (branding, dconf, zfs check, initramfs, scrub)
-branding/                   # brand.json + generate.py + generated assets
-scripts/                    # build.sh, run-qemu.sh, archive-iso.sh, bootstrap-deps.sh, lib.sh
-dist/                       # latest built ISO (gitignored)
-archive/                    # hash-stamped ISOs (gitignored) + MANIFEST.md (tracked)
+auto/config              # the whole `lb config` invocation — edit to reshape the image
+config/package-lists/    # what packages go in
+config/includes.chroot/  # files baked into the system (os-release, dconf, calamares, plymouth)
+config/includes.binary/  # files placed on the ISO (GRUB theme)
+config/hooks/normal/     # build-time hooks (authored hooks use the 0xxx range)
+branding/                # brand.json + generate.py + generated assets
+scripts/                 # build.sh, run-qemu.sh, archive-iso.sh, bootstrap-deps.sh, lib.sh
+dist/                    # newest built ISO (gitignored)
+archive/                 # hash-stamped ISOs (gitignored) + MANIFEST.md (tracked)
 ```
 
-## Caveats / known soft spots
+**[`CLAUDE.md`](CLAUDE.md) is the architecture & contributor guide** — invariants,
+the full hook order, the branding pipeline, and the gotchas that bit us. Read it
+before changing the image shape.
 
-- **Build needs root.** `live-build` bootstraps a chroot and mounts pseudo-fs.
-- **Root-on-ZFS via Calamares** (`config/includes.chroot/etc/calamares/`) is the
-  least battle-tested piece and may need tuning against the exact Calamares
-  version in trixie. The live environment's ZFS support (import/create pools) is
-  straightforward; the *guided install onto ZFS* is the part to validate.
-- The live ISO boots from squashfs, not ZFS — see "What this is" above.
+`make help` lists every target.
+
+---
+
+## Known soft spots
+
+- **Root-on-ZFS via Calamares** ([`config/includes.chroot/etc/calamares/`](config/includes.chroot/etc/calamares))
+  is the least battle-tested piece and may need tuning against the exact
+  Calamares version in trixie. The live ZFS support is solid; the *guided install
+  onto ZFS* is what to validate on real hardware/VM.
+- The live ISO boots from squashfs, not ZFS — unavoidable for live media.
 
 ## License
 
 MIT for the build tooling and branding (see [`LICENSE`](LICENSE)). A built ISO
 bundles Debian and many packages under their own licenses.
+</content>
+</invoke>
