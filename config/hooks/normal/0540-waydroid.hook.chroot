@@ -1,0 +1,11 @@
+#!/bin/sh
+# Enable the first-boot Waydroid init service. On an INSTALLED system it runs
+# `waydroid init` (downloads the Android image) and then brings up
+# waydroid-container; it's gated off in the live session. We do NOT enable
+# waydroid-container here -- it would fail before init has run; the init service
+# enables it once init succeeds. The `.apk` launcher uses bs-apk-install, which
+# starts a session on demand.
+set -e
+systemctl enable betriebssystem-waydroid-init.service 2>/dev/null \
+    || echo "W: could not enable betriebssystem-waydroid-init.service (non-fatal)" >&2
+echo "I: enabled betriebssystem-waydroid-init.service (waydroid init on first boot of an installed system)"

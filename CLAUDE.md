@@ -67,6 +67,7 @@ installer config on top.
 - `0500-ai-venv.hook.chroot` — build `/opt/ai-venv` (CPU torch + DS/ML/web/vector stack from `ai-requirements.txt`); `ai-python` + Jupyter kernel. Guarded, multi-GB.
 - `0510-ollama.hook.chroot` — install Ollama (local LLM runtime) via its script.
 - `0520-docker-images.hook.chroot` — enable first-boot service pulling postgres/qdrant/python/node (installed systems only).
+- `0540-waydroid.hook.chroot` — enable the first-boot service that runs `waydroid init` (downloads the Android image, then brings up waydroid-container) on installed systems only.
 - `0900-initramfs.hook.chroot` — rebuild initramfs (embeds Plymouth + ZFS).
 - `9000-release-scrub.hook.chroot` — if `/etc/.bs-buildmode` == `release`, scrub cosmetic tells; always remove the marker.
 
@@ -93,7 +94,12 @@ installer config on top.
   `.exe/.msi`→Wine, `.apk`→Waydroid (post-install), images→Loupe, video/audio→VLC,
   3D→f3d, `.blend`→Blender, folders→Nautilus, code/text/data→VS Code. `.iso` NOT remapped.
 - **Waydroid (APKs)**: kernel has `binder_linux` (module, no BINDERFS); the trixie
-  repo package is shipped but works only post-install (`waydroid init` + session).
+  repo package is shipped but works only post-install. `0540-waydroid` enables a
+  first-boot `waydroid init` service (installed systems only, gated `!/run/live/medium`,
+  once) that downloads the Android image and brings up waydroid-container. The
+  `.apk` MIME handler runs `bs-apk-install` (`/usr/local/bin`), which checks init
+  is done, starts a session on demand, then `waydroid app install`s — in a terminal
+  so errors are visible.
 
 ## How to work here
 
@@ -249,6 +255,10 @@ installer config on top.
 - [x] Vendor download cache (`cache/vendor/` + `vendor-fetch.sh`): arduino-cli,
       PlatformIO udev rules, GNOME extensions, folder-color reuse downloads across
       builds (2026-05-27). pip wheels were already cached via `cache/pip`.
+- [x] Waydroid post-install setup (2026-05-27): first-boot `waydroid init` service
+      (installed systems only) + `bs-apk-install` wrapper behind the `.apk` handler.
+      Still to verify on a real install: init downloads the image and an `.apk`
+      double-click installs into a running session.
 - [ ] Possible follow-ups: trim ISO size (deferred — we want to keep the full stack).
 
 ## Self-update protocol

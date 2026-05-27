@@ -2,8 +2,8 @@
 Type=Application
 Name=Install APK (Waydroid)
 Comment=Install an Android package into Waydroid
-Exec=waydroid app install %f
-TryExec=waydroid
+Exec=bs-apk-install %f
+TryExec=bs-apk-install
 NoDisplay=true
 Terminal=true
 MimeType=application/vnd.android.package-archive;

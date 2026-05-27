@@ -1,0 +1,37 @@
+#!/bin/sh
+# bs-apk-install FILE.apk -- install an Android package into Waydroid, bringing
+# the runtime up first. Bound to the "Install APK (Waydroid)" launcher and the
+# application/vnd.android.package-archive MIME type. Runs in a terminal so its
+# progress/errors are visible. APKs only work on an INSTALLED system (Waydroid
+# needs init + a session, neither of which exists on the live medium).
+set -eu
+
+APK="${1:-}"
+[ -n "${APK}" ] || { echo "usage: bs-apk-install FILE.apk"; exit 2; }
+command -v waydroid >/dev/null 2>&1 || { echo "Waydroid is not installed on this system."; exit 1; }
+
+# Waydroid must be initialized (downloads the Android system image) before use.
+# The first-boot service does this automatically; if it hasn't finished, say so
+# instead of failing cryptically.
+if [ ! -f /var/lib/waydroid/waydroid.cfg ]; then
+    echo "Waydroid isn't initialized yet."
+    echo "It downloads the Android system image on first boot; if that's still"
+    echo "running, wait and retry. To do it manually:  sudo waydroid init"
+    exit 1
+fi
+
+# Make sure a session is running before installing.
+if ! waydroid status 2>/dev/null | grep -qiE 'session.*running'; then
+    echo "Starting Waydroid session..."
+    waydroid session start >/dev/null 2>&1 &
+    i=0
+    while [ "${i}" -lt 30 ]; do
+        waydroid status 2>/dev/null | grep -qiE 'session.*running' && break
+        sleep 1
+        i=$((i + 1))
+    done
+fi
+
+echo "Installing ${APK} ..."
+waydroid app install "${APK}"
+echo "Done. Launch it from the app drawer (or run: waydroid show-full-ui)."

@@ -1,0 +1,21 @@
+[Unit]
+Description=BETRIEBSSYSTEM first-boot Waydroid init (download Android image)
+After=network-online.target
+Wants=network-online.target
+# Installed systems only (the live medium can't init Waydroid), once, and only
+# if Waydroid is actually installed and not already initialized.
+ConditionPathExists=!/run/live/medium
+ConditionPathExists=/usr/bin/waydroid
+ConditionPathExists=!/var/lib/waydroid/waydroid.cfg
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Downloads the Android system + vendor images (~1 GB) and writes the config.
+ExecStart=/usr/bin/waydroid init
+# Only bring the container service up once init actually succeeded. Leading '-'
+# so a unit-name change in the waydroid package can't fail the whole init.
+ExecStartPost=-/bin/systemctl enable --now waydroid-container.service
+
+[Install]
+WantedBy=multi-user.target
