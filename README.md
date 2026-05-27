@@ -1,3 +1,11 @@
+> **Human-generated intro message:**\
+> This project helps me set up new machines quickly.\
+> Smartly optininated package decisions for agentic development.\
+> Feel free to reach out or just use this project :)\
+> \- Finn <finn@finnmglas.com>
+
+> *Sidenote: If you're stuck on windows, this can help you transition to the good side quickly too!*
+
 <div align="center">
 
 ![BETRIEBSSYSTEM](branding/out/betriebssystem-1024.png)
