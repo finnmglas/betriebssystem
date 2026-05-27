@@ -1,16 +1,28 @@
 #!/bin/sh
-# arduino-cli (official install script -> /usr/local/bin) and the PlatformIO
-# udev rules for serial access to dev boards. Guarded (network).
+# arduino-cli (release tarball -> /usr/local/bin) and the PlatformIO udev rules
+# for serial access to dev boards. Guarded (network); both downloads go through
+# the vendor cache so rebuilds reuse them.
 set -e
 
-echo "I: installing arduino-cli"
 if command -v curl >/dev/null 2>&1; then
-    curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh \
-        | BINDIR=/usr/local/bin sh || echo "W: arduino-cli install failed (non-fatal)" >&2
+    . /usr/local/lib/betriebssystem/vendor-fetch.sh
+
+    echo "I: installing arduino-cli"
+    tgz="$(mktemp /tmp/arduino-cli-XXXXXX.tgz)"
+    if vendor_get "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz" "${tgz}" \
+        && tar -xzf "${tgz}" -C /usr/local/bin arduino-cli 2>/dev/null; then
+        chmod +x /usr/local/bin/arduino-cli
+        echo "I: arduino-cli $(/usr/local/bin/arduino-cli version 2>/dev/null || true)"
+    else
+        # Fall back to the official install script if the tarball path failed.
+        curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh \
+            | BINDIR=/usr/local/bin sh || echo "W: arduino-cli install failed (non-fatal)" >&2
+    fi
+    rm -f "${tgz}"
 
     echo "I: fetching PlatformIO udev rules"
-    curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules \
-        -o /etc/udev/rules.d/99-platformio-udev.rules || echo "W: pio udev fetch failed (non-fatal)" >&2
+    vendor_get "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/system/99-platformio-udev.rules" \
+        /etc/udev/rules.d/99-platformio-udev.rules || echo "W: pio udev fetch failed (non-fatal)" >&2
 fi
 
 # Serial dev boards need the user in dialout/plugdev (live user already is via

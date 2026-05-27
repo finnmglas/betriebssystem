@@ -61,7 +61,7 @@ installer config on top.
 - `0260-desktop-db.hook.chroot` — rebuild MIME + desktop DBs (file associations).
 - `0300-pipx.hook.chroot` — JupyterLab + PlatformIO system-wide via pipx (guarded, network).
 - `0300-zfs-check.hook.chroot` — **fails the build** if `zfs.ko` didn't build for the live kernel.
-- `0310-embedded.hook.chroot` — arduino-cli + PlatformIO udev rules (guarded, network).
+- `0310-embedded.hook.chroot` — arduino-cli (release tarball) + PlatformIO udev rules (guarded, network; both via the vendor cache).
 - `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service` (installs Logseq/Android Studio/Arduino IDE2 on first boot of an INSTALLED system).
 - `0420-vscode-ext.hook.chroot` — preinstall VS Code extensions into `/etc/skel` (guarded; needs `--no-sandbox`; clears the ext cache so the shipped betriebssystem.terminals ext also loads).
 - `0500-ai-venv.hook.chroot` — build `/opt/ai-venv` (CPU torch + DS/ML/web/vector stack from `ai-requirements.txt`); `ai-python` + Jupyter kernel. Guarded, multi-GB.
@@ -142,11 +142,21 @@ installer config on top.
   needs `python3-nautilus`) is **menu-only** (Open in VS Code / Compress / Merge
   PDF) on purpose — a `ColumnProvider`/`InfoProvider` runs per-file and can hang
   Nautilus; menu providers run on click only. A broken extension is just skipped.
-- **Persistent pip cache**: `build.sh` runs the build in stages
-  (`lb bootstrap`→`lb chroot`→`lb binary`) and bind-mounts host `cache/pip` into
-  `chroot/root/.cache/pip` for the chroot stage, so the AI venv / pipx hooks reuse
-  wheels. The unmount is safety-critical (a stale mount + `lb clean`'s `rm -rf`
-  would delete the host cache) — `cleanup_mounts` runs on EXIT and before clean.
+- **Persistent build caches**: `build.sh` runs the build in stages
+  (`lb bootstrap`→`lb chroot`→`lb binary`) and bind-mounts two host dirs into the
+  chroot for the chroot stage: `cache/pip`→`chroot/root/.cache/pip` (AI venv /
+  pipx wheels) and `cache/vendor`→`chroot/var/cache/bs-vendor` (curl downloads via
+  `vendor-fetch.sh`). The unmount is safety-critical (a stale mount + `lb clean`'s
+  `rm -rf` would delete the host cache) — `cleanup_mounts` runs on EXIT and before
+  clean, and covers both mounts.
+- **Vendor cache for curl downloads**: hooks that `curl` a non-apt artifact
+  (arduino-cli tarball, PlatformIO udev rules, GNOME extension zips, folder-color)
+  source `/usr/local/lib/betriebssystem/vendor-fetch.sh` and call
+  `vendor_get URL DEST`. It serves from `cache/vendor` (keyed by URL sha256) on a
+  hit, else downloads and caches. A **cold cache behaves exactly like plain curl**
+  (and existing network fallbacks are kept), so first/offline builds are unchanged
+  — it's a pure accelerator. Ollama and VS Code extensions aren't vendored (their
+  installers self-download / use unstable marketplace URLs).
 - **Filesystem timestamps** are pinned to 2002-06-01 (epoch 1022889600) by
   exporting `SOURCE_DATE_EPOCH` + `MKSQUASHFS_OPTIONS="-all-time … -mkfs-time …"`
   in `build.sh` (live-build only *appends* to `MKSQUASHFS_OPTIONS`, so the env
@@ -236,8 +246,10 @@ installer config on top.
       Calamares (the `betriebssystem-install` autostart path).
 - [ ] Verify the first-boot Flatpak service installs Logseq/Android Studio/Arduino
       IDE 2 on an installed system (and stays off in live).
-- [ ] Possible follow-ups: cache vendored downloads (arduino-cli, pip wheels) into
-      `cache/vendor/`; Waydroid post-install setup script; trim ISO size.
+- [x] Vendor download cache (`cache/vendor/` + `vendor-fetch.sh`): arduino-cli,
+      PlatformIO udev rules, GNOME extensions, folder-color reuse downloads across
+      builds (2026-05-27). pip wheels were already cached via `cache/pip`.
+- [ ] Possible follow-ups: trim ISO size (deferred — we want to keep the full stack).
 
 ## Self-update protocol
 

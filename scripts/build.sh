@@ -17,15 +17,22 @@ require_root "$@"
 RELEASE="${RELEASE:-0}"
 cd "${BS_ROOT}"
 
-# Persistent pip cache: a host-side wheel cache that gets bind-mounted into the
-# chroot for the chroot stage (where the AI venv / pipx hooks run), so they don't
-# re-download multiple GB on every clean build.
+# Persistent build caches: host-side dirs bind-mounted into the chroot for the
+# chroot stage so hooks don't re-fetch the same bytes on every clean build.
+#   - pip cache    -> wheels for the AI venv / pipx hooks (multiple GB)
+#   - vendor cache -> curl downloads (arduino-cli, gnome extensions, udev rules,
+#                     folder-color) via config/.../vendor-fetch.sh
+# Each is unmounted BEFORE lb binary, so neither ends up in the image.
 PIP_CACHE="${BS_ROOT}/cache/pip"
 CHROOT_PIP="${BS_ROOT}/chroot/root/.cache/pip"
+VENDOR_CACHE="${BS_ROOT}/cache/vendor"
+CHROOT_VENDOR="${BS_ROOT}/chroot/var/cache/bs-vendor"
 cleanup_mounts() {
-    if mountpoint -q "${CHROOT_PIP}" 2>/dev/null; then
-        umount "${CHROOT_PIP}" 2>/dev/null || umount -l "${CHROOT_PIP}" 2>/dev/null || true
-    fi
+    for _mp in "${CHROOT_PIP}" "${CHROOT_VENDOR}"; do
+        if mountpoint -q "${_mp}" 2>/dev/null; then
+            umount "${_mp}" 2>/dev/null || umount -l "${_mp}" 2>/dev/null || true
+        fi
+    done
 }
 
 # Always unmount the pip cache and re-own the tree on exit. The unmount is
@@ -59,6 +66,7 @@ fi
 log "lb clean"
 cleanup_mounts  # never let lb clean's rm -rf recurse through a stale bind mount
 mountpoint -q "${CHROOT_PIP}" 2>/dev/null && die "stale pip-cache mount at ${CHROOT_PIP}; unmount it first"
+mountpoint -q "${CHROOT_VENDOR}" 2>/dev/null && die "stale vendor-cache mount at ${CHROOT_VENDOR}; unmount it first"
 lb clean noauto >/dev/null 2>&1 || true
 
 # 5. configure (runs auto/config) then build
@@ -77,12 +85,13 @@ log "filesystem timestamps pinned to 2002-06-01 (SOURCE_DATE_EPOCH=${SOURCE_DATE
 # Staged build (= lb build) so we can bind the persistent pip cache into the
 # chroot for the chroot stage only, and unmount it BEFORE lb binary copies the
 # chroot into the image.
-log "lb build  (staged: bootstrap -> chroot[+pip cache] -> binary)"
-mkdir -p "${PIP_CACHE}"
+log "lb build  (staged: bootstrap -> chroot[+pip/vendor caches] -> binary)"
+mkdir -p "${PIP_CACHE}" "${VENDOR_CACHE}"
 set +e
 {
     lb bootstrap &&
-    { mkdir -p "${CHROOT_PIP}" && mount --bind "${PIP_CACHE}" "${CHROOT_PIP}"; } &&
+    { mkdir -p "${CHROOT_PIP}"    && mount --bind "${PIP_CACHE}"    "${CHROOT_PIP}"; } &&
+    { mkdir -p "${CHROOT_VENDOR}" && mount --bind "${VENDOR_CACHE}" "${CHROOT_VENDOR}"; } &&
     lb chroot
 } 2>&1 | tee build.log
 RC="${PIPESTATUS[0]}"

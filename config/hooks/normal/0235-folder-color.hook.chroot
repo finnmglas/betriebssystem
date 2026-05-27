@@ -5,13 +5,14 @@
 # can never break the build or the file manager.
 set -e
 command -v curl >/dev/null 2>&1 || { echo "I: no curl; skipping folder-color"; exit 0; }
+. /usr/local/lib/betriebssystem/vendor-fetch.sh
 
 EXT=/usr/share/nautilus-python/extensions
 TMP="$(mktemp -d)"
 ok=0
 for branch in master main; do
-    if curl -fsSL "https://github.com/costales/folder-color/archive/refs/heads/${branch}.tar.gz" \
-         -o "${TMP}/fc.tgz" 2>/dev/null && tar -xzf "${TMP}/fc.tgz" -C "${TMP}" 2>/dev/null; then
+    if vendor_get "https://github.com/costales/folder-color/archive/refs/heads/${branch}.tar.gz" \
+         "${TMP}/fc.tgz" && tar -xzf "${TMP}/fc.tgz" -C "${TMP}" 2>/dev/null; then
         ok=1; break
     fi
 done

@@ -10,6 +10,7 @@ DEST=/usr/share/gnome-shell/extensions
 SHELL_VER=48
 mkdir -p "${DEST}"
 command -v curl >/dev/null 2>&1 || { echo "I: no curl; skipping gnome extension downloads"; exit 0; }
+. /usr/local/lib/betriebssystem/vendor-fetch.sh
 
 for uuid in \
     windowIsReady_Remover@nunofarruca@gmail.com \
@@ -17,7 +18,7 @@ for uuid in \
     BrowserSearchProvider@mepowerleo10.github.io ; do
     url="https://extensions.gnome.org/download-extension/${uuid}.shell-extension.zip?shell_version=${SHELL_VER}"
     tmp="$(mktemp /tmp/bsext-XXXXXX.zip)"
-    if curl -fsSL "${url}" -o "${tmp}" 2>/dev/null && [ -s "${tmp}" ]; then
+    if vendor_get "${url}" "${tmp}"; then
         mkdir -p "${DEST}/${uuid}"
         if command -v unzip >/dev/null 2>&1 && unzip -oq "${tmp}" -d "${DEST}/${uuid}" 2>/dev/null; then
             [ -d "${DEST}/${uuid}/schemas" ] && glib-compile-schemas "${DEST}/${uuid}/schemas" 2>/dev/null || true
