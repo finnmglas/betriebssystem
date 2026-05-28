@@ -169,7 +169,12 @@ installer config on top.
   pipx wheels) and `cache/vendor`→`chroot/var/cache/bs-vendor` (curl downloads via
   `vendor-fetch.sh`). The unmount is safety-critical (a stale mount + `lb clean`'s
   `rm -rf` would delete the host cache) — `cleanup_mounts` runs on EXIT and before
-  clean, and covers both mounts.
+  clean, and covers both mounts. The pip mountpoint is **`chown root:root`'d after
+  mounting**: pip runs as root in the chroot and silently disables its cache if the
+  dir isn't root-owned (its `check_path_owner` guard against `sudo` without `-H`).
+  The bind mount shares the host inode so this retargets host `cache/pip` too, and
+  `restore_ownership` flips the tree back to `$SUDO_USER` on exit. Without it the
+  multi-GB AI-venv/pipx wheels silently re-download every build.
 - **Vendor cache for curl downloads**: hooks that `curl` a non-apt artifact
   (arduino-cli tarball, PlatformIO udev rules, GNOME extension zips, folder-color)
   source `/usr/local/lib/betriebssystem/vendor-fetch.sh` and call

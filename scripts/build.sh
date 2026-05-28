@@ -90,7 +90,11 @@ mkdir -p "${PIP_CACHE}" "${VENDOR_CACHE}"
 set +e
 {
     lb bootstrap &&
-    { mkdir -p "${CHROOT_PIP}"    && mount --bind "${PIP_CACHE}"    "${CHROOT_PIP}"; } &&
+    # chown the pip mountpoint to root: pip runs as root in the chroot and
+    # disables its cache if the dir isn't root-owned (a sudo-without-`-H` guard).
+    # The bind mount shares the host inode, so this retargets host cache/pip too;
+    # restore_ownership flips the whole tree back to $SUDO_USER on exit.
+    { mkdir -p "${CHROOT_PIP}"    && mount --bind "${PIP_CACHE}"    "${CHROOT_PIP}"    && chown root:root "${CHROOT_PIP}"; } &&
     { mkdir -p "${CHROOT_VENDOR}" && mount --bind "${VENDOR_CACHE}" "${CHROOT_VENDOR}"; } &&
     lb chroot
 } 2>&1 | tee build.log
