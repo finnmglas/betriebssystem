@@ -16,3 +16,4 @@ reproducible: `git checkout <commit>` then `sudo ./scripts/build.sh`.
 | 2026-05-26T21:07Z | 0.1.0 | cc80268 | dev | 6.12.90+deb13-amd64 | 7.6G | `BETRIEBSSYSTEM-0.1.0-gcc80268-amd64.iso` | `e2d1b067c3214122aec87b929953064660cbea324c8d3faa35e3f5380d00a5ee` |
 | 2026-05-28T09:41Z | 0.1.0 | 098310b | dev | 6.12.90+deb13-amd64 | 8.3G | `BETRIEBSSYSTEM-0.1.0-g098310b-amd64.iso` | `8421f3b9a115face5de6c68ede9ae06857df0cebb0675a087a25fa720dd2f3dd` |
 | 2026-05-28T12:07Z | 0.1.0 | 83f9b87 | dev | 6.12.90+deb13-amd64 | 8.3G | `BETRIEBSSYSTEM-0.1.0-g83f9b87-amd64.iso` | `84d45fd545500861c28e11171991915e6786c14fad56add95416a77569f0f158` |
+| 2026-05-28T13:49Z | 0.1.0 | e10af22 | dev | 6.12.90+deb13.1-amd64 | 8.7G | `BETRIEBSSYSTEM-0.1.0-ge10af22-amd64.iso` | `5e55bf2861db3cf3ef66418dffb98f3478223d2bf1e8ec0c1f0a2bfb710094b5` |
