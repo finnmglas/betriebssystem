@@ -243,7 +243,25 @@ installer config on top.
   partition/zfs/mount stages, that config is the first suspect. The module
   config schema (`zfs.conf`, `partition.conf`) may need adjusting to the exact
   module version. The live-environment ZFS support is solid; the *guided
-  installer onto ZFS* is what to verify on real hardware/VM.
+  installer onto ZFS* is what to verify on real hardware/VM. The `zfs` AND
+  `zfshostid` Calamares modules both ship in the image, but only `zfs` is in
+  `settings.conf`'s exec sequence — adding `zfshostid` (so the target's
+  `/etc/hostid` matches the pool's, for clean import on reboot) is a recommended
+  but unverified change; confirm placement in a VM before relying on it.
+- **The installed system needs its own GRUB baked into the squashfs.** live-build
+  installs grub packages *transiently* during `lb binary` only to build the ISO's
+  bootloader, then **removes** them — so the squashfs (= what Calamares unpacks
+  onto the target) otherwise has `grub-common` (grub-mkconfig/probe, a dep) but
+  NOT `grub-install` / platform modules / `zfs.mod`, and Calamares' `bootloader`
+  step would yield an **unbootable install**. `30-installer.list.chroot` therefore
+  ships `grub2-common` + `grub-pc-bin` + `grub-efi-amd64-bin` (BIOS+UEFI modules
+  incl. ZFS) + `os-prober`. They land in the squashfs because package-lists install
+  at the *chroot* stage (before `mksquashfs`), unlike live-build's later transient
+  grub. Secure Boot on the target (`grub-efi-amd64-signed` + `shim-signed`) is a
+  follow-up — adding them risks apt pulling the install-to-disk `grub-efi-amd64`
+  metapackage, so verify in a VM. To confirm what an install would get, extract
+  `/live/filesystem.squashfs` from the ISO (`xorriso -osirrox on -indev ISO
+  -extract …`) and `unsquashfs -l`.
 - **KVM:** the dev user here is not in the `kvm` group, so `run-qemu.sh` falls
   back to slow TCG. `sudo usermod -aG kvm "$USER"` + re-login fixes it.
 - The user cannot give Claude passwordless root in the default setup, so the
@@ -254,6 +272,11 @@ installer config on top.
 
 - [ ] Validate a real root-on-ZFS install end-to-end in a VM and lock down the
       Calamares `zfs`/`partition`/`mount` config to the trixie module version.
+      Specifically verify: (a) the now-baked GRUB packages let `grub-install`
+      succeed on the target and survive into the squashfs; (b) whether
+      `zfshostid` should be added to the exec sequence; (c) Secure Boot on the
+      target (`grub-efi-amd64-signed` + `shim-signed`) without pulling the
+      install-to-disk `grub-efi-amd64` metapackage.
 - [ ] Confirm GDM autologin for the live `user` (live-config should handle it;
       verify on first boot).
 - [x] First successful build: `BETRIEBSSYSTEM-0.1.0-amd64.iso`, 1.9 GB, ZFS

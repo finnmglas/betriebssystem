@@ -6,3 +6,13 @@ calamares-settings-debian
 gparted
 dosfstools
 e2fsprogs
+# GRUB for the TARGET system. live-build only installs grub transiently to build
+# the ISO and removes it, so the squashfs (= installed system) otherwise has no
+# grub-install / platform modules / zfs.mod and Calamares' bootloader step would
+# produce an unbootable system. These -bin + grub2-common packages give it
+# grub-install and both BIOS (i386-pc) and UEFI (x86_64-efi) modules incl. zfs.
+# (Secure Boot's grub-efi-amd64-signed + shim-signed are a follow-up to verify.)
+grub2-common
+grub-pc-bin
+grub-efi-amd64-bin
+os-prober
