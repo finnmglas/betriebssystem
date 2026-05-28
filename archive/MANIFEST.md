@@ -15,3 +15,4 @@ reproducible: `git checkout <commit>` then `sudo ./scripts/build.sh`.
 | 2026-05-26T19:27Z | 0.1.0 | 6966f21 | dev | 6.12.90+deb13-amd64 | 7.6G | `BETRIEBSSYSTEM-0.1.0-g6966f21-amd64.iso` | `31bc20b4e1809f54d81880c8e0d21991cdd274dcc4b08cabb6b82fe00c067f36` |
 | 2026-05-26T21:07Z | 0.1.0 | cc80268 | dev | 6.12.90+deb13-amd64 | 7.6G | `BETRIEBSSYSTEM-0.1.0-gcc80268-amd64.iso` | `e2d1b067c3214122aec87b929953064660cbea324c8d3faa35e3f5380d00a5ee` |
 | 2026-05-28T09:41Z | 0.1.0 | 098310b | dev | 6.12.90+deb13-amd64 | 8.3G | `BETRIEBSSYSTEM-0.1.0-g098310b-amd64.iso` | `8421f3b9a115face5de6c68ede9ae06857df0cebb0675a087a25fa720dd2f3dd` |
+| 2026-05-28T12:07Z | 0.1.0 | 83f9b87 | dev | 6.12.90+deb13-amd64 | 8.3G | `BETRIEBSSYSTEM-0.1.0-g83f9b87-amd64.iso` | `84d45fd545500861c28e11171991915e6786c14fad56add95416a77569f0f158` |
