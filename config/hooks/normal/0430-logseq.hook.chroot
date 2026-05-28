@@ -1,0 +1,38 @@
+#!/bin/sh
+# Bake Logseq into the image so it works in the LIVE session (not just installed
+# systems). Flatpak apps can't be installed in the build chroot -- bwrap needs
+# user namespaces the chroot denies -- so for apps that must be present live we
+# ship the upstream AppImage EXTRACTED into /opt (plain files: no FUSE, no bwrap).
+# The matching launcher is config/.../usr/share/applications/logseq.desktop.
+# Downloaded via the vendor cache; FULLY guarded (any failure is skipped).
+set -e
+command -v curl >/dev/null 2>&1 || { echo "I: no curl; skipping Logseq"; exit 0; }
+command -v jq   >/dev/null 2>&1 || { echo "W: no jq; skipping Logseq" >&2; exit 0; }
+. /usr/local/lib/betriebssystem/vendor-fetch.sh
+
+# Resolve the latest linux-x64 AppImage asset from GitHub releases.
+api="$(curl -fsSL https://api.github.com/repos/logseq/logseq/releases/latest 2>/dev/null || true)"
+url="$(printf '%s' "${api}" | jq -r '.assets[]?.browser_download_url | select(test("linux.*\\.AppImage$"))' 2>/dev/null | head -n1)"
+[ -n "${url}" ] || { echo "W: could not resolve Logseq AppImage URL (skipped)" >&2; exit 0; }
+
+app="$(mktemp /tmp/logseq-XXXXXX.AppImage)"
+if ! vendor_get "${url}" "${app}"; then
+    echo "W: Logseq download failed (skipped)" >&2; rm -f "${app}"; exit 0
+fi
+chmod +x "${app}"
+
+# --appimage-extract uses the bundled squashfs tools (no FUSE) -> plain files.
+tmp="$(mktemp -d)"
+if ( cd "${tmp}" && "${app}" --appimage-extract >/dev/null 2>&1 ) && [ -d "${tmp}/squashfs-root" ]; then
+    rm -rf /opt/logseq
+    mkdir -p /opt/logseq
+    cp -a "${tmp}/squashfs-root/." /opt/logseq/
+    chmod -R a+rX /opt/logseq
+    # Best-effort icon for the launcher (Icon=logseq).
+    icon="$(find /opt/logseq -maxdepth 3 \( -name 'logseq.png' -o -name 'Logseq.png' -o -name 'icon.png' \) 2>/dev/null | head -n1)"
+    [ -n "${icon}" ] && cp "${icon}" /usr/share/pixmaps/logseq.png 2>/dev/null || true
+    echo "I: installed Logseq to /opt/logseq ($(basename "${url}"))"
+else
+    echo "W: Logseq AppImage extract failed (skipped)" >&2
+fi
+rm -rf "${tmp}" "${app}"

@@ -11,8 +11,10 @@ ConditionPathExists=!/var/lib/betriebssystem/firstboot.done
 Type=oneshot
 RemainAfterExit=yes
 ExecStartPre=/usr/bin/mkdir -p /var/lib/betriebssystem
-# Apps that are not in Debian: Logseq, Android Studio, Arduino IDE 2.
-ExecStart=/usr/bin/flatpak install -y --system --noninteractive flathub com.logseq.Logseq com.google.AndroidStudio cc.arduino.IDE2
+# Apps not in Debian and too heavy/namespace-bound to bake (Android Studio uses
+# flatpak extra-data apply_extra). Logseq is NOT here -- it's baked into /opt by
+# 0430-logseq so it works in the live session too.
+ExecStart=/usr/bin/flatpak install -y --system --noninteractive flathub com.google.AndroidStudio cc.arduino.IDE2
 ExecStartPost=/usr/bin/touch /var/lib/betriebssystem/firstboot.done
 
 [Install]

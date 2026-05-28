@@ -63,8 +63,9 @@ installer config on top.
 - `0300-zfs-check.hook.chroot` — **fails the build** if `zfs.ko` didn't build for the live kernel.
 - `0310-embedded.hook.chroot` — arduino-cli (release tarball) + PlatformIO udev rules (guarded, network; both via the vendor cache).
 - `0320-vendored-runtimes.hook.chroot` — Zig/Deno/Bun (not in Debian) into `/opt` + `/usr/local/bin` via the vendor cache; fully guarded. Zig version resolved from ziglang.org's `index.json`; Deno/Bun from GitHub `releases/latest`.
-- `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service` (installs Logseq/Android Studio/Arduino IDE2 on first boot of an INSTALLED system).
+- `0400-flatpak.hook.chroot` — add Flathub remote; enable `betriebssystem-firstboot.service` (installs Android Studio + Arduino IDE2 on first boot of an INSTALLED system; Logseq is baked into `/opt` instead, see `0430`).
 - `0420-vscode-ext.hook.chroot` — preinstall VS Code extensions into `/etc/skel` (guarded; needs `--no-sandbox`; clears the ext cache so the shipped betriebssystem.terminals ext also loads).
+- `0430-logseq.hook.chroot` — bake Logseq into `/opt/logseq` (upstream AppImage, extracted = plain files) so it works in the LIVE session; launcher is `logseq.desktop`. Guarded, vendor-cached, resolves latest from GitHub.
 - `0500-ai-venv.hook.chroot` — build `/opt/ai-venv` (CPU torch + DS/ML/web/vector stack from `ai-requirements.txt`); `ai-python` + Jupyter kernel. Guarded, multi-GB.
 - `0510-ollama.hook.chroot` — install Ollama (local LLM runtime) via its script.
 - `0520-docker-images.hook.chroot` — enable first-boot service pulling postgres/qdrant/python/node (installed systems only).
@@ -96,7 +97,9 @@ installer config on top.
   previews via thumbnailers.
 - **AI/ML**: `/opt/ai-venv` (`ai-python` + Jupyter kernel), Ollama, first-boot
   Docker images (postgres/qdrant/python/node, installed systems).
-- **Flatpak (first boot, installed systems only)**: Logseq, Android Studio, Arduino IDE 2.
+- **Logseq**: baked into `/opt/logseq` (extracted AppImage) by `0430-logseq`, so
+  it's in the live session AND carries into installed systems via the squashfs copy.
+- **Flatpak (first boot, installed systems only)**: Android Studio, Arduino IDE 2.
 - **pipx (system-wide /opt/pipx)**: JupyterLab, PlatformIO.
 - **Fonts/emoji**: Noto (+CJK/extra), Liberation/DejaVu/Hack/JetBrains/Cascadia/
   Ubuntu, FontAwesome, Powerline, color-emoji + gnome-characters.
@@ -213,7 +216,10 @@ installer config on top.
   (`bwrap: No permissions to create new namespace`). It also drags in ~5 GB of
   runtimes for zero working apps. So flatpak apps are deferred to the first-boot
   service (`bwrap` works fine on a booted system). For apps that MUST be in the
-  live image, use a `/opt` tarball/AppImage instead (plain files, no bwrap).
+  live image, use a `/opt` tarball/AppImage instead (plain files, no bwrap) —
+  this is exactly what `0430-logseq` does (extracts the AppImage via
+  `--appimage-extract`, no FUSE needed; launches with `--no-sandbox`). Arduino
+  IDE 2 also ships an AppImage and could move the same way if it's wanted live.
 - **Firefox** is configured via enterprise policy `policies.json` (in both
   `/usr/lib/firefox-esr/distribution/` and `/etc/firefox/policies/`): no
   onboarding, Google default, force-installed uBlock/Containers/Cookie-Editor,
@@ -270,8 +276,10 @@ installer config on top.
 - [ ] Verify on first boot: dash favorites populate, xonsh is the terminal shell,
       `.gba`/`.exe` double-click associations work, GRUB "Install" entry launches
       Calamares (the `betriebssystem-install` autostart path).
-- [ ] Verify the first-boot Flatpak service installs Logseq/Android Studio/Arduino
+- [ ] Verify the first-boot Flatpak service installs Android Studio + Arduino
       IDE 2 on an installed system (and stays off in live).
+- [ ] Verify Logseq launches from the app grid in the LIVE session (baked into
+      `/opt/logseq` by `0430`); confirm `--no-sandbox` is enough on the live kernel.
 - [x] Vendor download cache (`cache/vendor/` + `vendor-fetch.sh`): arduino-cli,
       PlatformIO udev rules, GNOME extensions, folder-color reuse downloads across
       builds (2026-05-27). pip wheels were already cached via `cache/pip`.

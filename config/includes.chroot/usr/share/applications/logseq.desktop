@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Logseq
+Comment=Privacy-first, open-source knowledge base
+Exec=/opt/logseq/AppRun --no-sandbox %U
+TryExec=/opt/logseq/AppRun
+Icon=logseq
+Terminal=false
+Categories=Office;
+MimeType=x-scheme-handler/logseq;
+StartupWMClass=Logseq
+StartupNotify=true
